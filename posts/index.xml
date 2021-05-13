@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on chengleqi&#39;s blog</title>
-    <link>https://chengleqi.github.io/posts/</link>
+    <link>https://chengleqi.com/posts/</link>
     <description>Recent content in Posts on chengleqi&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>2021 chengleqi</copyright>
-    <lastBuildDate>Wed, 31 Mar 2021 20:11:23 +0800</lastBuildDate><atom:link href="https://chengleqi.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 31 Mar 2021 20:11:23 +0800</lastBuildDate><atom:link href="https://chengleqi.com/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Build a torrent-client by Golang</title>
-      <link>https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/</link>
+      <link>https://chengleqi.com/posts/build-a-torrent-client-by-golang/</link>
       <pubDate>Wed, 31 Mar 2021 20:11:23 +0800</pubDate>
       
-      <guid>https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/</guid>
+      <guid>https://chengleqi.com/posts/build-a-torrent-client-by-golang/</guid>
       <description>想要深入分析k8s网络，需掌握iptables、ipvs、veth-pair、虚拟网桥等概念以及Wireshark、tcpdump、brctl等工具的使用。
 本章研究一下P2P网络，并使用Wireshark抓包分析。
 构建一个BitTorrent客户端 目标：下载debian.iso。
