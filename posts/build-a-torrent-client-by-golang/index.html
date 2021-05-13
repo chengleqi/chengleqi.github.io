@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html><head>
+<title>Build a torrent-client by Golang</title>
+
+
+
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="研究P2P网络，并使用Golang构建一个Torrent下载客户端">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+<meta property="og:title" content="Build a torrent-client by Golang" />
+<meta property="og:description" content="研究P2P网络，并使用Golang构建一个Torrent下载客户端" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-03-31T20:11:23&#43;08:00" />
+<meta property="article:modified_time" content="2021-03-31T20:11:23&#43;08:00" /><meta property="og:site_name" content="My Blog" />
+
+
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Build a torrent-client by Golang"/>
+<meta name="twitter:description" content="研究P2P网络，并使用Golang构建一个Torrent下载客户端"/>
+
+
+
+
+
+
+
+<script src="/vendor/js/jquery.min.js" ></script>
+<script src="/vendor/js/popper.min.js" ></script>
+<script src="/vendor/js/bootstrap.min.js" ></script>
+<script src="/vendor/js/smooth-scroll.polyfills.min.js" ></script>
+<link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+<script src="/vendor/js/vue.min.js" ></script>
+
+
+  
+
+
+
+
+<link rel="icon" href="https://chengleqi.github.io/GOPHER_MIC_DROP.ico">
+
+
+
+<link rel="stylesheet" href="https://chengleqi.github.io/scss/journal.min.5e8f3f653e9f6ce67bf72ff8ee6fee69decf7b5639a3ae7f8344750ad4e065b1.css" integrity="sha256-Xo8/ZT6fbOZ79y/47m/uad7Pe1Y5o65/g0R1CtTgZbE=" media="screen">
+
+
+
+<link rel="stylesheet" href="https://chengleqi.github.io/scss/dark-mode.min.bdfa63b2e89903517dcbb1032b537d54cff3f425c19d008a78dfe49e6cd07ced.css" integrity="sha256-vfpjsuiZA1F9y7EDK1N9VM/z9CXBnQCKeN/knmzQfO0=" media="screen">
+
+
+<script src="/js/loadCSS.js"></script>
+<script>
+  loadCSS("https://fonts.googleapis.com/css?family=Lora|Montserrat|Fira+Mono|Noto+Serif+SC|Material+Icons");
+</script>
+
+
+
+
+  
+    <script src="/js/toc-collapse.js"></script>
+  
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="/vendor/js/md5.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+  clientID: 'your client id',
+  clientSecret: 'your client secret',
+  repo: 'repo name',
+  owner: 'user',
+  admin: ['user'],
+  id: md5(location.pathname),
+  distractionFreeMode: 'false'
+  });
+  window.onload = function () {
+        gitalk.render('gitalk-container')
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://chengleqi.github.io/">
+    
+        <div class="nav-title">
+            chengleqi&#39;s blog
+        </div>
+        
+        <div class="nav-subtitle">
+            自言自语.
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 chengleqi
+	
+
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								<ul class="collapse" data-toggle="collapse">
+							
+						
+						
+							<li>
+								<a href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e4%b8%aabittorrent%e5%ae%a2%e6%88%b7%e7%ab%af" onclick="onNavClick(`#构建一个bittorrent客户端-nav`)" id="构建一个bittorrent客户端-nav">
+									构建一个BitTorrent客户端
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								<ul class="collapse" data-toggle="collapse">
+							
+						
+						
+							<li>
+								<a href="#bt%e6%96%87%e4%bb%b6%e7%ae%80%e4%bb%8b" onclick="onNavClick(`#bt文件简介-nav`)" id="bt文件简介-nav">
+									BT文件简介
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e8%af%bb%e5%85%a5bt%e6%96%87%e4%bb%b6" onclick="onNavClick(`#读入bt文件-nav`)" id="读入bt文件-nav">
+									读入BT文件
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e8%8e%b7%e5%8f%96%e4%b8%80%e8%b5%b7%e8%81%8a%e5%a4%a9%e7%9a%84peer%e8%90%8c" onclick="onNavClick(`#获取一起聊天的peer萌-nav`)" id="获取一起聊天的peer萌-nav">
+									获取一起聊天的peer萌
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e6%9e%84%e5%bb%ba%e7%ae%a1%e9%81%93%e5%92%8c%e7%ba%a4%e7%a8%8b" onclick="onNavClick(`#构建管道和纤程-nav`)" id="构建管道和纤程-nav">
+									构建管道和纤程
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%bd%a0%e5%a5%bdpeer" onclick="onNavClick(`#你好peer-nav`)" id="你好peer-nav">
+									你好，peer
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e7%96%af%e7%8b%82%e4%b8%8b%e8%bd%bd" onclick="onNavClick(`#疯狂下载-nav`)" id="疯狂下载-nav">
+									疯狂下载
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e6%8b%bc%e5%87%91" onclick="onNavClick(`#拼凑-nav`)" id="拼凑-nav">
+									拼凑
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+        <a class="pagination-action" v-on:click="toggleDarkMode">
+            <i class="material-icons pagination-action-icon" v-if="isDarkMode">
+                brightness_4
+            </i>
+            <i class="material-icons pagination-action-icon" v-else="isDarkMode">
+                brightness_7
+            </i>
+        </a>
+        
+        
+    </div>
+</div>
+<div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- CATALOG -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								<ul class="collapse" data-toggle="collapse">
+							
+						
+						
+							<li>
+								<a href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e4%b8%aabittorrent%e5%ae%a2%e6%88%b7%e7%ab%af" onclick="onNavClick(`#构建一个bittorrent客户端-nav`)" id="构建一个bittorrent客户端-nav">
+									构建一个BitTorrent客户端
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								<ul class="collapse" data-toggle="collapse">
+							
+						
+						
+							<li>
+								<a href="#bt%e6%96%87%e4%bb%b6%e7%ae%80%e4%bb%8b" onclick="onNavClick(`#bt文件简介-nav`)" id="bt文件简介-nav">
+									BT文件简介
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e8%af%bb%e5%85%a5bt%e6%96%87%e4%bb%b6" onclick="onNavClick(`#读入bt文件-nav`)" id="读入bt文件-nav">
+									读入BT文件
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e8%8e%b7%e5%8f%96%e4%b8%80%e8%b5%b7%e8%81%8a%e5%a4%a9%e7%9a%84peer%e8%90%8c" onclick="onNavClick(`#获取一起聊天的peer萌-nav`)" id="获取一起聊天的peer萌-nav">
+									获取一起聊天的peer萌
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e6%9e%84%e5%bb%ba%e7%ae%a1%e9%81%93%e5%92%8c%e7%ba%a4%e7%a8%8b" onclick="onNavClick(`#构建管道和纤程-nav`)" id="构建管道和纤程-nav">
+									构建管道和纤程
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%bd%a0%e5%a5%bdpeer" onclick="onNavClick(`#你好peer-nav`)" id="你好peer-nav">
+									你好，peer
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e7%96%af%e7%8b%82%e4%b8%8b%e8%bd%bd" onclick="onNavClick(`#疯狂下载-nav`)" id="疯狂下载-nav">
+									疯狂下载
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e6%8b%bc%e5%87%91" onclick="onNavClick(`#拼凑-nav`)" id="拼凑-nav">
+									拼凑
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://chengleqi.github.io/">
+            chengleqi&#39;s blog
+        </a>
+        
+        <button type="button" class="nav-darkmode-toggle" v-on:click="toggleDarkMode">
+            <i class="material-icons" v-if="isDarkMode">
+                brightness_4
+            </i>
+            <i class="material-icons" v-else="isDarkMode">
+                brightness_7
+            </i>
+        </button>
+        
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://chengleqi.github.io/">
+        <div class="single-column-header-title">chengleqi&#39;s blog</div>
+        
+        <div class="single-column-header-subtitle">自言自语.</div>
+        
+
+    </a>
+</div>
+
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+                
+            
+
+            <div class="post-head-wrapper"
+                
+                    
+                    
+                    style="background-image: url('https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/p2p-network.jpg')"
+                    
+                
+            >
+                <div class="post-title">
+                    Build a torrent-client by Golang
+                    
+                    <div class="post-subtitle">
+                        研究P2P网络，并使用Golang构建一个Torrent下载客户端
+                    </div>
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2021-03-31 20:11
+                        </time>
+                        
+
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/network">Network</a>
+                                &nbsp;
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="/tags/p2p">P2P</a>
+                                &nbsp;
+                            
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                
+                <div class="post-body" v-pre>
+                
+                    <p>想要深入分析k8s网络，需掌握iptables、ipvs、veth-pair、虚拟网桥等概念以及Wireshark、tcpdump、brctl等工具的使用。</p>
+<p>本章研究一下P2P网络，并使用Wireshark抓包分析。</p>
+<h2 id="构建一个bittorrent客户端">构建一个BitTorrent客户端</h2>
+<p>目标：下载debian.iso。</p>
+<h3 id="bt文件简介">BT文件简介</h3>
+<p>使用的torrent文件是https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/debian-10.9.0-amd64-netinst.iso.torrent</p>
+<p>打开BT文件</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%8E%9F%E5%A7%8BBT%E6%96%87%E4%BB%B6.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%8E%9F%E5%A7%8BBT%E6%96%87%E4%BB%B6.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>内容又多又杂，原因是种子文件是Bencoding编码，使用https://wiki.theory.org/BitTorrentSpecification#Bencoding规则解码之后得到</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%A7%A3%E7%BC%96%E7%A0%81%E4%B9%8B%E5%90%8E%E7%9A%84BT%E6%96%87%E4%BB%B6.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%A7%A3%E7%BC%96%E7%A0%81%E4%B9%8B%E5%90%8E%E7%9A%84BT%E6%96%87%E4%BB%B6.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<ul>
+<li>length代表了文件大小（<code>353370112Byte/1024/1024=337M</code>）</li>
+<li>piece length代表了piece的大小（<code>262144Byte/1024=256K</code>）</li>
+<li>piece代表了每一块的哈希值(<code>26960/20=1348块或者353370112/1024/256=1348块</code>）。SHA-1产生20字节的哈希码。所以总共是<code>1348*20=26960</code>字节。可以看出这个BT文件将debian.iso分成1348块。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pieces.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pieces.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<blockquote>
+<p>This mechanism allows us to verify the integrity of each piece as we go. It makes BitTorrent resistant to accidental corruption or intentional <strong>torrent poisoning</strong>.</p>
+</blockquote>
+<h3 id="读入bt文件">读入BT文件</h3>
+<p>首先将种子文件（debian-10.9.0-amd64-netinst.iso.torrent）Unmarshal之后存入bencodeTorrent结构体，如下图所示</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bto.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bto.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>然后调用bencodeTorrent结构体的toTorrentFile方法，这个方法主要做两件事。</p>
+<ol>
+<li>对info字典做SHA-1，得到infoHash</li>
+<li>对Pieces进行20字节一组的切片，得到[] [20] byte类型的PieceHashes，PieceHashes的长度是1348</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/infoHash%E5%92%8CpieceHashes.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/infoHash%E5%92%8CpieceHashes.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>最后构造出torrentFile，如下</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrentFile.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrentFile.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>之后我们就基于这个torrentFile进行联系Tracker、握手校验、下载校验等操作。</p>
+<h3 id="获取一起聊天的peer萌">获取一起聊天的peer萌</h3>
+<p>我们首先要生成一个随机的20字节的peerID，然后依此构造一个出url：</p>
+<p><code>http://bttracker.debian.org:6969/announce?compact=1&amp;downloaded=0&amp;info_hash=%9F%29%2C%93%EB%0D%BD%D7%FFzJ%A5Q%AA%A1%EA%7C%AF%E0%04&amp;left=353370112&amp;peer_id=%8Fh%7D%DBS%1BO%9F%CD%F1%11%24%00%F3%EC%0D%C8%92%9E%B4&amp;port=6881&amp;uploaded=0</code></p>
+<ul>
+<li>compact：此参数设为1，表示期望得到紧凑模式的节点列表，也就是<code>host:port</code>形式</li>
+<li>downloaded、uploaded、left：主要用于Tracker统计数据</li>
+<li>info_hash：种子文件的哈希，可以理解为下载主题，因为联系Tracker就是为了加入以info_hash为下载主题的swarm中。我们联系到peer之后也要验证一下info_hash看看我们是否说的是同一个事情。</li>
+<li>peer_id、port：peer_id就是我们之前生成的20字节的随机数，port是我们自己开放的端口。</li>
+</ul>
+<p>这些参数以RawQuery的格式append到base之后（<code>base.RawQuery = params.Encode()</code>），base就是Tracker服务器的域名<code>http://bttracker.debian.org:6969/announce</code>。</p>
+<p>然后对Tracker服务器发起Get请求。</p>
+<p>请求之后得到response如下</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/tracker%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%93%8D%E5%BA%94.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/tracker%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%93%8D%E5%BA%94.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<blockquote>
+<p><code>Interval</code> tells us how often we’re supposed to connect to the tracker again to refresh our list of peers. A value of 900 means we should reconnect every 15 minutes (900 seconds).</p>
+<p><code>Peers</code> is another long binary blob containing the IP addresses of each peer. It’s made out of <strong>groups of six bytes</strong>. The first four bytes in each group represent the peer’s IP address—each byte represents a number in the IP. The last two bytes represent the port, as a big-endian <code>uint16</code>.</p>
+</blockquote>
+<p>peers是以字节的形式发送过来的，转换关系如下图所示</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/address.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/address.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>将返回的Peers信息Unmarshal之后（<code>peers.Unmarshal([]byte(trackerResp.Peers))</code>）得到IP加端口的形式，如下图所示</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%AD%A3%E5%9C%A8%E4%B8%8B%E8%BD%BD%E7%9A%84peers.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%AD%A3%E5%9C%A8%E4%B8%8B%E8%BD%BD%E7%9A%84peers.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>可见有相当多的Peers正在同时下载。（截图所示的四个IP地址分别是加拿大、俄罗斯、美国和意大利）</p>
+<p>将所有下载所需信息装入Torrent结构体中然后开始下载任务。</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrent%E7%BB%93%E6%9E%84%E4%BD%93.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrent%E7%BB%93%E6%9E%84%E4%BD%93.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<h3 id="构建管道和纤程">构建管道和纤程</h3>
+<p>首先构建两个管道，workQueue管道和result管道。其中workQueue管道相当于装着任务卡的盒子，result管道相当于提交任务成果的盒子。</p>
+<p>workQueue管道的大小是1348，也就是debian.iso分成的块的个数，每个goroutine都从这个管道里领取任务让后去疯狂下载。</p>
+<p>result管道是no buffer类型的，各个goroutine下载完成后将成果扔到这里。</p>
+<p>workQueue管道的buffer如下图所示</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/workQueue%E7%9A%84buffer%E5%A4%A7%E5%B0%8F.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/workQueue%E7%9A%84buffer%E5%A4%A7%E5%B0%8F.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>若要领取任务则必须先设置任务，接下来遍历PieceHashes将任务存储至管道</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%B0%86%E4%BB%BB%E5%8A%A1%E5%AD%98%E5%82%A8%E8%87%B3%E7%AE%A1%E9%81%93.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%B0%86%E4%BB%BB%E5%8A%A1%E5%AD%98%E5%82%A8%E8%87%B3%E7%AE%A1%E9%81%93_hub98eaff647994d5561540875b772c163_118841_800x0_resize_box_2.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>之后开始构建同peer等量的纤程，意思是从tracker处发现了多少peer，就构建多少纤程来进行下载。</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#228b22">// Start workers
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">for</span> _, peer := <span style="color:#8b008b;font-weight:bold">range</span> t.Peers {
+    <span style="color:#8b008b;font-weight:bold">go</span> t.<span style="color:#008b45">startDownloadWorker</span>(peer, workQueue, results)
+}
+</code></pre></div><p>我debug的时候向tracker请求到50个peer，所以开启50个纤程。</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BC%80%E5%90%AF50%E4%B8%AA%E7%BA%A4%E7%A8%8B.PNG" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BC%80%E5%90%AF50%E4%B8%AA%E7%BA%A4%E7%A8%8B_hub49614af6b38273345315c69a0de65ef_171524_600x0_resize_box_2.PNG">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<h3 id="你好peer">你好，peer</h3>
+<p>现在站在纤程的角度来看。</p>
+<p>先对peer建立TCP连接，然后发送握手消息，peer之间采用的是Peer Wire协议，握手消息的格式是：<code>&lt;pstrlen&gt;&lt;pstr&gt;&lt;reserved&gt;&lt;info_hash&gt;&lt;peer_id&gt;</code></p>
+<blockquote>
+<ol>
+<li>The length of the protocol identifier, which is always 19 (0x13 in hex)</li>
+<li>The protocol identifier, called the <strong>pstr</strong> which is always <code>BitTorrent protocol</code></li>
+<li>Eight <strong>reserved bytes</strong>, all set to 0. We’d flip some of them to 1 to indicate that we support certain <a href="http://www.bittorrent.org/beps/bep_0010.html">extensions</a>. But we don’t, so we’ll keep them at 0.</li>
+<li>The <strong>infohash</strong> that we calculated earlier to identify which file we want</li>
+<li>The <strong>Peer ID</strong> that we made up to identify ourselves</li>
+</ol>
+</blockquote>
+<p>TCP连接，建立后序列化握手请求</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BA%8F%E5%88%97%E5%8C%96%E6%8F%A1%E6%89%8B%E5%8D%8F%E8%AE%AE.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BA%8F%E5%88%97%E5%8C%96%E6%8F%A1%E6%89%8B%E5%8D%8F%E8%AE%AE.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>然后发送给peer，peer收到消息后会返回一个握手协议，格式和上面相同，然后client校验info_hash是否相同，来保证peer之间讨论的是同一个东西。</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%AF%BB%E5%8F%96%E8%BF%94%E5%9B%9E%E7%9A%84%E6%8F%A1%E6%89%8B%E4%BF%A1%E6%81%AF%E5%B9%B6%E6%A0%A1%E9%AA%8C.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%AF%BB%E5%8F%96%E8%BF%94%E5%9B%9E%E7%9A%84%E6%8F%A1%E6%89%8B%E4%BF%A1%E6%81%AF%E5%B9%B6%E6%A0%A1%E9%AA%8C.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>每个纤程的握手示意图如下：</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/P2P%E6%8F%A1%E6%89%8B.PNG" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/P2P%E6%8F%A1%E6%89%8B_hu7d29640c0d1522c0347a8f577bf9192a_266445_800x0_resize_box_2.PNG">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>在peer回复handshake之后，紧接着会发送回一个messageID为bitfield的消息。该消息的payload是一个169字节的数组。</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%BF%94%E5%9B%9E%E7%9A%84bitfield.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%BF%94%E5%9B%9E%E7%9A%84bitfield.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p><code>168*8+4=1348</code>正好是debian.iso分成的虚拟块的个数，这个bitfield可以理解为掩码，示意图如下</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield%E6%8E%A9%E7%A0%81.PNG" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield%E6%8E%A9%E7%A0%81.PNG">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>相比于使用byte的代表有无，bit代表有无的方式使传输的数据变小了。</p>
+<blockquote>
+<p>One of the most interesting types of message is the <strong>bitfield</strong>, which is a data structure that peers use to efficiently encode which pieces they are able to send us. A bitfield looks like a byte array, and to check which pieces they have, we just need to look at the positions of the <em>bits</em> set to 1. You can think of it like the digital equivalent of a coffee shop loyalty card. We start with a blank card of all <code>0</code>, and flip bits to <code>1</code> to mark their positions as “stamped.”</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>By working with <em>bits</em> instead of <em>bytes</em>, this data structure is super compact. We can stuff information about eight pieces in the space of a single byte—the size of a <code>bool</code>. The tradeoff is that accessing values becomes a little more tricky. The smallest unit of memory that computers can address are bytes, so to get to our bits, we have to do some bitwise manipulation:</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#228b22">// A Bitfield represents the pieces that a peer has
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">type</span> Bitfield []<span style="color:#00688b;font-weight:bold">byte</span>
+
+<span style="color:#228b22">// HasPiece tells if a bitfield has a particular index set
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> (bf Bitfield) <span style="color:#008b45">HasPiece</span>(index <span style="color:#00688b;font-weight:bold">int</span>) <span style="color:#00688b;font-weight:bold">bool</span> {
+byteIndex := index / <span style="color:#b452cd">8</span>
+offset := index % <span style="color:#b452cd">8</span>
+<span style="color:#8b008b;font-weight:bold">return</span> bf[byteIndex]&gt;&gt;(<span style="color:#b452cd">7</span>-offset)&amp;<span style="color:#b452cd">1</span> != <span style="color:#b452cd">0</span>
+}
+
+<span style="color:#228b22">// SetPiece sets a bit in the bitfield
+</span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> (bf Bitfield) <span style="color:#008b45">SetPiece</span>(index <span style="color:#00688b;font-weight:bold">int</span>) {
+byteIndex := index / <span style="color:#b452cd">8</span>
+offset := index % <span style="color:#b452cd">8</span>
+bf[byteIndex] |= <span style="color:#b452cd">1</span> &lt;&lt; (<span style="color:#b452cd">7</span> - offset)
+}
+</code></pre></div></blockquote>
+<p>到现在为止，本地client对peer的连接已经建立，可以开始下载数据了。</p>
+<h3 id="疯狂下载">疯狂下载</h3>
+<p>从workQueue中取出任务，对比bitfield，以此确定对方是否拥有此piece。若这个peer没有，则将任务放回workQueue。</p>
+<p>若存在此piece，则进入attemptDownloadPiece函数尝试下载此piece。</p>
+<p>此时client的状态是被peer给choke住了。</p>
+<blockquote>
+<p>Once we’ve completed the initial handshake, we can send and receive <strong>messages</strong>. Well, not quite—if the other peer isn’t ready to accept messages, we can’t send any until they tell us they’re ready. In this state, we’re considered <strong>choked</strong> by the other peer. They’ll send us an <strong>unchoke</strong> message to let us know that we can begin asking them for data. By default, we assume that we’re choked until proven otherwise.</p>
+<p>Once we’ve been unchoked, we can then begin sending <strong>requests</strong> for pieces, and they can send us messages back containing pieces.</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/choke.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/choke.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+</blockquote>
+<p>当我们收到peer发来的unchoke消息后，就可以对数据进行请求。BT文件中规定的piece length是256K，但是我们下载的时候将piece再次划分成block，每个block的大小是16K，然后进行流水线传输。</p>
+<blockquote>
+<p>Files, pieces, and piece hashes aren’t the full story—we can go further by breaking down pieces into <strong>blocks</strong>. A block is a part of a piece, and we can fully define a block by the <strong>index</strong> of the piece it’s part of, its byte <strong>offset</strong> within the piece, and its <strong>length</strong>. When we make requests for data from peers, we are actually requesting <em>blocks</em>. A block is usually 16KB large, meaning that a single 256 KB piece might actually require 16 requests.</p>
+<p>Network round-trips are expensive, and requesting each block one by one will absolutely tank the performance of our download. Therefore, it’s important to <strong>pipeline</strong> our requests such that we keep up a constant pressure of some number of unfulfilled requests. This can increase the throughput of our connection by an order of magnitude.</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pipelining.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pipelining.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+</blockquote>
+<p>接下来进行请求，请求的格式是固定的。</p>
+<p>request: &lt;len=0013&gt;&lt;id=6&gt;<!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>The <strong>request</strong> message is fixed length, and is used to request a block. The payload contains the following information:</p>
+<ul>
+<li><strong>index</strong>: integer specifying the zero-based piece index</li>
+<li><strong>begin</strong>: integer specifying the zero-based byte offset within the piece</li>
+<li><strong>length</strong>: integer specifying the requested length.</li>
+</ul>
+<p>项目作者设置了pipeline的MaxBacklog为5，即连续发送5次request，然后去readMessage。示意图如下</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%91%E9%80%81.PNG" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%91%E9%80%81.PNG">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>piece: &lt;len=0009+X&gt;&lt;id=7&gt;<!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>The <strong>piece</strong> message is variable length, where X is the length of the block. The payload contains the following information:</p>
+<ul>
+<li><strong>index</strong>: integer specifying the zero-based piece index</li>
+<li><strong>begin</strong>: integer specifying the zero-based byte offset within the piece</li>
+<li><strong>block</strong>: block of data, which is a subset of the piece specified by index.</li>
+</ul>
+<p>client收到messageID为piece的消息后，解析出payload中的msg.Payload[8:]的字节存入buffer中。</p>
+<p>看一眼下载到的内容：</p>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<figure align="Center" role="group" aria-describedby="caption-d41d8cd98f00b204e9800998ecf8427e">
+  <a href="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E4%B8%8B%E8%BD%BD%E5%88%B0%E7%9A%84%E5%86%85%E5%AE%B9.png" class="img-link">
+    <img src="https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E4%B8%8B%E8%BD%BD%E5%88%B0%E7%9A%84%E5%86%85%E5%AE%B9.png">
+  </a>
+  <figcaption id="caption-d41d8cd98f00b204e9800998ecf8427e">
+    
+  </figcaption>
+</figure>
+<p>是一个16K的block，这就是我们真正需要的内容。</p>
+<blockquote>
+<p>其中peer如果下载校验完成新的piece后，还会发来have消息。让我们来更新bitfield。</p>
+<p>have消息的格式为：</p>
+<p>have: &lt;len=0005&gt;&lt;id=4&gt;<!-- raw HTML omitted --></p>
+<p>The <strong>have</strong> message is fixed length. The payload is the zero-based index of a piece that has just been successfully downloaded and verified via the hash.</p>
+</blockquote>
+<p>将一块piece存储到buffer中，此时attemptDownloadPiece函数就结束了，如果其中有err发生，就将此piece再次放到管道中，等待其他纤程再次分配到这个piece继续下载。</p>
+<p>然后进入checkIntegrity函数，对buffer进行SHA-1，之后再对比piece的SHA-1，以校验下载的完整性。</p>
+<p>最后将校验结果正确的buffer放入result管道。</p>
+<h3 id="拼凑">拼凑</h3>
+<p>将result从管道中取出，拼成完整的buffer。</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#228b22">//创建最终存储的buf数组
+</span><span style="color:#228b22"></span>buf := <span style="color:#658b00">make</span>([]<span style="color:#00688b;font-weight:bold">byte</span>, t.Length)
+
+res := &lt;-results
+begin, end := t.<span style="color:#008b45">calculateBoundsForPiece</span>(res.index)
+<span style="color:#658b00">copy</span>(buf[begin:end], res.buf)
+</code></pre></div><p>最后将buf写入文件</p>
+<div class="highlight"><pre style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">outFile, err := os.<span style="color:#008b45">Create</span>(path)
+_, err = outFile.<span style="color:#008b45">Write</span>(buf)
+</code></pre></div><p>到此位置文件的P2P下载就结束了。</p>
+<p>此项目的不足：</p>
+<ol>
+<li>支支持.torrent文件，并不支持磁力链接</li>
+<li>只支持HTTP类型的Tracker，可以查看https://ngosang.github.io/trackerslist/trackers_best.txt，许多Tracker服务器都是UDP的</li>
+<li>不支持包含多文件的BT种子</li>
+<li>吸血鬼模式，并不支持上传</li>
+</ol>
+<p>虽然有许多不足，但是已经对于了解P2P网络已经足够。</p>
+<hr>
+<p>为保持简短，本章到此为止。下一章再使用Wireshark进行抓包分析。</p>
+<p>由于BT种子还是存在Tracker服务器，并不是完全的去中心化，容易遭到封锁，所以使用DHT的磁力链接已经成为P2P下载的主流，之后单独开篇介绍。</p>
+<p>参考：</p>
+<p><a href="https://github.com/veggiedefender/torrent-client">https://github.com/veggiedefender/torrent-client</a></p>
+<p><a href="https://blog.jse.li/posts/torrent/">https://blog.jse.li/posts/torrent/</a></p>
+<p><a href="https://wiki.theory.org/BitTorrentSpecification">https://wiki.theory.org/BitTorrentSpecification</a></p>
+<p><a href="https://www.aneasystone.com/archives/2015/05/analyze-magnet-protocol-using-wireshark.html">https://www.aneasystone.com/archives/2015/05/analyze-magnet-protocol-using-wireshark.html</a></p>
+<p><a href="https://colobu.com/2016/07/01/the-complete-guide-to-golang-net-http-timeouts/">https://colobu.com/2016/07/01/the-complete-guide-to-golang-net-http-timeouts/</a></p>
+
+                    
+                    <HR width="100%" id="EOF">
+		    <p style="color:#777;">Last modified on 2021-03-31</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts">
+			Next<br>No newer posts.
+                </a>
+                
+                
+                
+                <a class="older-posts">
+			Previous<br>No older posts.
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+<div id="gitalk-container"></div>
+
+
+
+
+
+
+
+        
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://amazingrise.net">Rise</a>
+<br>
+Ported from <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	2021 chengleqi
+	
+</div>
+            </div>
+    <script>
+let app;
+
+app = new Vue({
+    el: '#app',
+    data: {
+        scrollY: 0,
+        navOpacity: 0,
+        isDrawerOpen: false,
+        mounted: false,
+        isDarkMode: false
+    },
+    methods: {
+            sgn(t, x) {
+                let k = 1. / (1. - 2 * t);
+                if (x <= t) return 0;
+                else if (x >= 1 - t) return 1;
+                else {
+                    return k * (x - t);
+                }
+            },
+            handleScroll() {
+                this.scrollY = window.scrollY;
+                this.navOpacity = this.sgn(.0, Math.min(1, Math.max(0, window.scrollY / (this.pageHeadHeight() - this.navBarHeight() * 0.8))));
+                const {navBar, navBackground, navTitle, extraContainer, streamContainer} = this.$refs;
+
+                if (this.navOpacity >= 1) {
+                    navBackground.style.opacity = 1;
+                    navTitle.style.opacity = 1;
+                } else {
+                    navBackground.style.opacity = 0;
+                    navTitle.style.opacity = 0;
+                }
+            },
+            handleResize() {
+                const {navBar, navBackground, navTitle, extraContainer, streamContainer} = this.$refs;
+                extraContainer.style.left = (streamContainer.offsetWidth - extraContainer.offsetWidth) + 'px';
+            },
+            navBarHeight() {
+                return this.$refs.navBar.offsetHeight;
+            },
+            pageHeadHeight() {
+                return this.$refs.pageHead.offsetHeight;
+            },
+            toggleDrawer() {
+                this.isDrawerOpen = !this.isDrawerOpen;
+                document.getElementsByTagName('html')[0].style.overflow = this.isDrawerOpen ? 'hidden' : 'unset';
+            },
+            closeDrawer() {
+                this.isDrawerOpen = false;
+                document.getElementsByTagName('html')[0].style.overflow = this.isDrawerOpen ? 'hidden' : 'unset';
+            },
+            toggleDarkMode() {
+                this.isDarkMode = !this.isDarkMode;
+                if (this.isDarkMode==true){
+                    document.cookie = "night=1;path=/";
+                    document.body.classList.add("night");
+                } else {
+                    document.cookie = "night=0;path=/";
+                    document.body.classList.remove("night");
+                }
+            }
+    },
+    created() {
+        window.addEventListener('scroll', this.handleScroll);
+        window.addEventListener('resize', this.handleResize);
+        window._nonDesktop = function () {
+            let check = false;
+            (function (a) {
+                if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
+            })(navigator.userAgent || navigator.vendor || window.opera);
+            return check;
+        };
+        
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        if (night==""){
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                
+            }
+        }else{
+            
+            if (night=="1") {
+                this.toggleDarkMode();
+            }
+        }
+    },
+    mounted() {
+        this.handleScroll();
+        this.handleResize();
+        this.mounted = true;
+
+        
+        
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.handleScroll);
+        window.removeEventListener('resize', this.handleResize);
+    }
+});
+</script>
+
+<script src="/js/journal.js"></script>
+
+    </body>
+</html>

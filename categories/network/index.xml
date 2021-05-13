@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Network on chengleqi&#39;s blog</title>
+    <link>https://chengleqi.github.io/categories/network/</link>
+    <description>Recent content in Network on chengleqi&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>2021 chengleqi</copyright>
+    <lastBuildDate>Wed, 31 Mar 2021 20:11:23 +0800</lastBuildDate><atom:link href="https://chengleqi.github.io/categories/network/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Build a torrent-client by Golang</title>
+      <link>https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/</link>
+      <pubDate>Wed, 31 Mar 2021 20:11:23 +0800</pubDate>
+      
+      <guid>https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/</guid>
+      <description>想要深入分析k8s网络，需掌握iptables、ipvs、veth-pair、虚拟网桥等概念以及Wireshark、tcpdump、brctl等工具的使用。
+本章研究一下P2P网络，并使用Wireshark抓包分析。
+构建一个BitTorrent客户端 目标：下载debian.iso。
+BT文件简介 使用的torrent文件是https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/debian-10.9.0-amd64-netinst.iso.torrent
+打开BT文件
+   内容又多又杂，原因是种子文件是Bencoding编码，使用https://wiki.theory.org/BitTorrentSpecification#Bencoding规则解码之后得到
+    length代表了文件大小（353370112Byte/1024/1024=337M） piece length代表了piece的大小（262144Byte/1024=256K） piece代表了每一块的哈希值(26960/20=1348块或者353370112/1024/256=1348块）。SHA-1产生20字节的哈希码。所以总共是1348*20=26960字节。可以看出这个BT文件将debian.iso分成1348块。      This mechanism allows us to verify the integrity of each piece as we go. It makes BitTorrent resistant to accidental corruption or intentional torrent poisoning.
+ 读入BT文件 首先将种子文件（debian-10.9.0-amd64-netinst.iso.torrent）Unmarshal之后存入bencodeTorrent结构体，如下图所示
+   然后调用bencodeTorrent结构体的toTorrentFile方法，这个方法主要做两件事。
+ 对info字典做SHA-1，得到infoHash 对Pieces进行20字节一组的切片，得到[] [20] byte类型的PieceHashes，PieceHashes的长度是1348     最后构造出torrentFile，如下
+   之后我们就基于这个torrentFile进行联系Tracker、握手校验、下载校验等操作。</description>
+    </item>
+    
+  </channel>
+</rss>

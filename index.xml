@@ -1,0 +1,698 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>chengleqi&#39;s blog</title>
+    <link>https://chengleqi.github.io/</link>
+    <description>Recent content on chengleqi&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>2021 chengleqi</copyright>
+    <lastBuildDate>Wed, 31 Mar 2021 20:11:23 +0800</lastBuildDate>
+    
+        <atom:link href="https://chengleqi.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Build a torrent-client by Golang</title>
+        <link>https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/</link>
+        <pubDate>Wed, 31 Mar 2021 20:11:23 +0800</pubDate>
+        
+        <guid>https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/</guid>
+        <description>chengleqi&#39;s blog https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/ -&lt;p&gt;想要深入分析k8s网络，需掌握iptables、ipvs、veth-pair、虚拟网桥等概念以及Wireshark、tcpdump、brctl等工具的使用。&lt;/p&gt;
+&lt;p&gt;本章研究一下P2P网络，并使用Wireshark抓包分析。&lt;/p&gt;
+&lt;h2 id=&#34;构建一个bittorrent客户端&#34;&gt;构建一个BitTorrent客户端&lt;/h2&gt;
+&lt;p&gt;目标：下载debian.iso。&lt;/p&gt;
+&lt;h3 id=&#34;bt文件简介&#34;&gt;BT文件简介&lt;/h3&gt;
+&lt;p&gt;使用的torrent文件是https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/debian-10.9.0-amd64-netinst.iso.torrent&lt;/p&gt;
+&lt;p&gt;打开BT文件&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%8E%9F%E5%A7%8BBT%E6%96%87%E4%BB%B6.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%8E%9F%E5%A7%8BBT%E6%96%87%E4%BB%B6.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;内容又多又杂，原因是种子文件是Bencoding编码，使用https://wiki.theory.org/BitTorrentSpecification#Bencoding规则解码之后得到&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%A7%A3%E7%BC%96%E7%A0%81%E4%B9%8B%E5%90%8E%E7%9A%84BT%E6%96%87%E4%BB%B6.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%A7%A3%E7%BC%96%E7%A0%81%E4%B9%8B%E5%90%8E%E7%9A%84BT%E6%96%87%E4%BB%B6.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;ul&gt;
+&lt;li&gt;length代表了文件大小（&lt;code&gt;353370112Byte/1024/1024=337M&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;piece length代表了piece的大小（&lt;code&gt;262144Byte/1024=256K&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;piece代表了每一块的哈希值(&lt;code&gt;26960/20=1348块或者353370112/1024/256=1348块&lt;/code&gt;）。SHA-1产生20字节的哈希码。所以总共是&lt;code&gt;1348*20=26960&lt;/code&gt;字节。可以看出这个BT文件将debian.iso分成1348块。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pieces.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pieces.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This mechanism allows us to verify the integrity of each piece as we go. It makes BitTorrent resistant to accidental corruption or intentional &lt;strong&gt;torrent poisoning&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;读入bt文件&#34;&gt;读入BT文件&lt;/h3&gt;
+&lt;p&gt;首先将种子文件（debian-10.9.0-amd64-netinst.iso.torrent）Unmarshal之后存入bencodeTorrent结构体，如下图所示&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bto.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bto.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;然后调用bencodeTorrent结构体的toTorrentFile方法，这个方法主要做两件事。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对info字典做SHA-1，得到infoHash&lt;/li&gt;
+&lt;li&gt;对Pieces进行20字节一组的切片，得到[] [20] byte类型的PieceHashes，PieceHashes的长度是1348&lt;/li&gt;
+&lt;/ol&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/infoHash%E5%92%8CpieceHashes.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/infoHash%E5%92%8CpieceHashes.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;最后构造出torrentFile，如下&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrentFile.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrentFile.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;之后我们就基于这个torrentFile进行联系Tracker、握手校验、下载校验等操作。&lt;/p&gt;
+&lt;h3 id=&#34;获取一起聊天的peer萌&#34;&gt;获取一起聊天的peer萌&lt;/h3&gt;
+&lt;p&gt;我们首先要生成一个随机的20字节的peerID，然后依此构造一个出url：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;http://bttracker.debian.org:6969/announce?compact=1&amp;amp;downloaded=0&amp;amp;info_hash=%9F%29%2C%93%EB%0D%BD%D7%FFzJ%A5Q%AA%A1%EA%7C%AF%E0%04&amp;amp;left=353370112&amp;amp;peer_id=%8Fh%7D%DBS%1BO%9F%CD%F1%11%24%00%F3%EC%0D%C8%92%9E%B4&amp;amp;port=6881&amp;amp;uploaded=0&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;compact：此参数设为1，表示期望得到紧凑模式的节点列表，也就是&lt;code&gt;host:port&lt;/code&gt;形式&lt;/li&gt;
+&lt;li&gt;downloaded、uploaded、left：主要用于Tracker统计数据&lt;/li&gt;
+&lt;li&gt;info_hash：种子文件的哈希，可以理解为下载主题，因为联系Tracker就是为了加入以info_hash为下载主题的swarm中。我们联系到peer之后也要验证一下info_hash看看我们是否说的是同一个事情。&lt;/li&gt;
+&lt;li&gt;peer_id、port：peer_id就是我们之前生成的20字节的随机数，port是我们自己开放的端口。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些参数以RawQuery的格式append到base之后（&lt;code&gt;base.RawQuery = params.Encode()&lt;/code&gt;），base就是Tracker服务器的域名&lt;code&gt;http://bttracker.debian.org:6969/announce&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;然后对Tracker服务器发起Get请求。&lt;/p&gt;
+&lt;p&gt;请求之后得到response如下&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/tracker%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%93%8D%E5%BA%94.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/tracker%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%93%8D%E5%BA%94.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;Interval&lt;/code&gt; tells us how often we’re supposed to connect to the tracker again to refresh our list of peers. A value of 900 means we should reconnect every 15 minutes (900 seconds).&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Peers&lt;/code&gt; is another long binary blob containing the IP addresses of each peer. It’s made out of &lt;strong&gt;groups of six bytes&lt;/strong&gt;. The first four bytes in each group represent the peer’s IP address—each byte represents a number in the IP. The last two bytes represent the port, as a big-endian &lt;code&gt;uint16&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;peers是以字节的形式发送过来的，转换关系如下图所示&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/address.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/address.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;将返回的Peers信息Unmarshal之后（&lt;code&gt;peers.Unmarshal([]byte(trackerResp.Peers))&lt;/code&gt;）得到IP加端口的形式，如下图所示&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%AD%A3%E5%9C%A8%E4%B8%8B%E8%BD%BD%E7%9A%84peers.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%AD%A3%E5%9C%A8%E4%B8%8B%E8%BD%BD%E7%9A%84peers.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;可见有相当多的Peers正在同时下载。（截图所示的四个IP地址分别是加拿大、俄罗斯、美国和意大利）&lt;/p&gt;
+&lt;p&gt;将所有下载所需信息装入Torrent结构体中然后开始下载任务。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrent%E7%BB%93%E6%9E%84%E4%BD%93.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/torrent%E7%BB%93%E6%9E%84%E4%BD%93.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;h3 id=&#34;构建管道和纤程&#34;&gt;构建管道和纤程&lt;/h3&gt;
+&lt;p&gt;首先构建两个管道，workQueue管道和result管道。其中workQueue管道相当于装着任务卡的盒子，result管道相当于提交任务成果的盒子。&lt;/p&gt;
+&lt;p&gt;workQueue管道的大小是1348，也就是debian.iso分成的块的个数，每个goroutine都从这个管道里领取任务让后去疯狂下载。&lt;/p&gt;
+&lt;p&gt;result管道是no buffer类型的，各个goroutine下载完成后将成果扔到这里。&lt;/p&gt;
+&lt;p&gt;workQueue管道的buffer如下图所示&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/workQueue%E7%9A%84buffer%E5%A4%A7%E5%B0%8F.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/workQueue%E7%9A%84buffer%E5%A4%A7%E5%B0%8F.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;若要领取任务则必须先设置任务，接下来遍历PieceHashes将任务存储至管道&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%B0%86%E4%BB%BB%E5%8A%A1%E5%AD%98%E5%82%A8%E8%87%B3%E7%AE%A1%E9%81%93.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%B0%86%E4%BB%BB%E5%8A%A1%E5%AD%98%E5%82%A8%E8%87%B3%E7%AE%A1%E9%81%93_hub98eaff647994d5561540875b772c163_118841_800x0_resize_box_2.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;之后开始构建同peer等量的纤程，意思是从tracker处发现了多少peer，就构建多少纤程来进行下载。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#228b22&#34;&gt;// Start workers
+&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; _, peer := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; t.Peers {
+    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;go&lt;/span&gt; t.&lt;span style=&#34;color:#008b45&#34;&gt;startDownloadWorker&lt;/span&gt;(peer, workQueue, results)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我debug的时候向tracker请求到50个peer，所以开启50个纤程。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BC%80%E5%90%AF50%E4%B8%AA%E7%BA%A4%E7%A8%8B.PNG&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BC%80%E5%90%AF50%E4%B8%AA%E7%BA%A4%E7%A8%8B_hub49614af6b38273345315c69a0de65ef_171524_600x0_resize_box_2.PNG&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;h3 id=&#34;你好peer&#34;&gt;你好，peer&lt;/h3&gt;
+&lt;p&gt;现在站在纤程的角度来看。&lt;/p&gt;
+&lt;p&gt;先对peer建立TCP连接，然后发送握手消息，peer之间采用的是Peer Wire协议，握手消息的格式是：&lt;code&gt;&amp;lt;pstrlen&amp;gt;&amp;lt;pstr&amp;gt;&amp;lt;reserved&amp;gt;&amp;lt;info_hash&amp;gt;&amp;lt;peer_id&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;The length of the protocol identifier, which is always 19 (0x13 in hex)&lt;/li&gt;
+&lt;li&gt;The protocol identifier, called the &lt;strong&gt;pstr&lt;/strong&gt; which is always &lt;code&gt;BitTorrent protocol&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Eight &lt;strong&gt;reserved bytes&lt;/strong&gt;, all set to 0. We’d flip some of them to 1 to indicate that we support certain &lt;a href=&#34;http://www.bittorrent.org/beps/bep_0010.html&#34;&gt;extensions&lt;/a&gt;. But we don’t, so we’ll keep them at 0.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;infohash&lt;/strong&gt; that we calculated earlier to identify which file we want&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;Peer ID&lt;/strong&gt; that we made up to identify ourselves&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;TCP连接，建立后序列化握手请求&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BA%8F%E5%88%97%E5%8C%96%E6%8F%A1%E6%89%8B%E5%8D%8F%E8%AE%AE.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E5%BA%8F%E5%88%97%E5%8C%96%E6%8F%A1%E6%89%8B%E5%8D%8F%E8%AE%AE.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;然后发送给peer，peer收到消息后会返回一个握手协议，格式和上面相同，然后client校验info_hash是否相同，来保证peer之间讨论的是同一个东西。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%AF%BB%E5%8F%96%E8%BF%94%E5%9B%9E%E7%9A%84%E6%8F%A1%E6%89%8B%E4%BF%A1%E6%81%AF%E5%B9%B6%E6%A0%A1%E9%AA%8C.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%AF%BB%E5%8F%96%E8%BF%94%E5%9B%9E%E7%9A%84%E6%8F%A1%E6%89%8B%E4%BF%A1%E6%81%AF%E5%B9%B6%E6%A0%A1%E9%AA%8C.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;每个纤程的握手示意图如下：&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/P2P%E6%8F%A1%E6%89%8B.PNG&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/P2P%E6%8F%A1%E6%89%8B_hu7d29640c0d1522c0347a8f577bf9192a_266445_800x0_resize_box_2.PNG&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;在peer回复handshake之后，紧接着会发送回一个messageID为bitfield的消息。该消息的payload是一个169字节的数组。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%BF%94%E5%9B%9E%E7%9A%84bitfield.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E8%BF%94%E5%9B%9E%E7%9A%84bitfield.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;168*8+4=1348&lt;/code&gt;正好是debian.iso分成的虚拟块的个数，这个bitfield可以理解为掩码，示意图如下&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield%E6%8E%A9%E7%A0%81.PNG&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield%E6%8E%A9%E7%A0%81.PNG&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;相比于使用byte的代表有无，bit代表有无的方式使传输的数据变小了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;One of the most interesting types of message is the &lt;strong&gt;bitfield&lt;/strong&gt;, which is a data structure that peers use to efficiently encode which pieces they are able to send us. A bitfield looks like a byte array, and to check which pieces they have, we just need to look at the positions of the &lt;em&gt;bits&lt;/em&gt; set to 1. You can think of it like the digital equivalent of a coffee shop loyalty card. We start with a blank card of all &lt;code&gt;0&lt;/code&gt;, and flip bits to &lt;code&gt;1&lt;/code&gt; to mark their positions as “stamped.”&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/bitfield.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;By working with &lt;em&gt;bits&lt;/em&gt; instead of &lt;em&gt;bytes&lt;/em&gt;, this data structure is super compact. We can stuff information about eight pieces in the space of a single byte—the size of a &lt;code&gt;bool&lt;/code&gt;. The tradeoff is that accessing values becomes a little more tricky. The smallest unit of memory that computers can address are bytes, so to get to our bits, we have to do some bitwise manipulation:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#228b22&#34;&gt;// A Bitfield represents the pieces that a peer has
+&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Bitfield []&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;byte&lt;/span&gt;
+
+&lt;span style=&#34;color:#228b22&#34;&gt;// HasPiece tells if a bitfield has a particular index set
+&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (bf Bitfield) &lt;span style=&#34;color:#008b45&#34;&gt;HasPiece&lt;/span&gt;(index &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;bool&lt;/span&gt; {
+byteIndex := index / &lt;span style=&#34;color:#b452cd&#34;&gt;8&lt;/span&gt;
+offset := index % &lt;span style=&#34;color:#b452cd&#34;&gt;8&lt;/span&gt;
+&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; bf[byteIndex]&amp;gt;&amp;gt;(&lt;span style=&#34;color:#b452cd&#34;&gt;7&lt;/span&gt;-offset)&amp;amp;&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt; != &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#228b22&#34;&gt;// SetPiece sets a bit in the bitfield
+&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (bf Bitfield) &lt;span style=&#34;color:#008b45&#34;&gt;SetPiece&lt;/span&gt;(index &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
+byteIndex := index / &lt;span style=&#34;color:#b452cd&#34;&gt;8&lt;/span&gt;
+offset := index % &lt;span style=&#34;color:#b452cd&#34;&gt;8&lt;/span&gt;
+bf[byteIndex] |= &lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; (&lt;span style=&#34;color:#b452cd&#34;&gt;7&lt;/span&gt; - offset)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;p&gt;到现在为止，本地client对peer的连接已经建立，可以开始下载数据了。&lt;/p&gt;
+&lt;h3 id=&#34;疯狂下载&#34;&gt;疯狂下载&lt;/h3&gt;
+&lt;p&gt;从workQueue中取出任务，对比bitfield，以此确定对方是否拥有此piece。若这个peer没有，则将任务放回workQueue。&lt;/p&gt;
+&lt;p&gt;若存在此piece，则进入attemptDownloadPiece函数尝试下载此piece。&lt;/p&gt;
+&lt;p&gt;此时client的状态是被peer给choke住了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Once we’ve completed the initial handshake, we can send and receive &lt;strong&gt;messages&lt;/strong&gt;. Well, not quite—if the other peer isn’t ready to accept messages, we can’t send any until they tell us they’re ready. In this state, we’re considered &lt;strong&gt;choked&lt;/strong&gt; by the other peer. They’ll send us an &lt;strong&gt;unchoke&lt;/strong&gt; message to let us know that we can begin asking them for data. By default, we assume that we’re choked until proven otherwise.&lt;/p&gt;
+&lt;p&gt;Once we’ve been unchoked, we can then begin sending &lt;strong&gt;requests&lt;/strong&gt; for pieces, and they can send us messages back containing pieces.&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/choke.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/choke.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当我们收到peer发来的unchoke消息后，就可以对数据进行请求。BT文件中规定的piece length是256K，但是我们下载的时候将piece再次划分成block，每个block的大小是16K，然后进行流水线传输。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Files, pieces, and piece hashes aren’t the full story—we can go further by breaking down pieces into &lt;strong&gt;blocks&lt;/strong&gt;. A block is a part of a piece, and we can fully define a block by the &lt;strong&gt;index&lt;/strong&gt; of the piece it’s part of, its byte &lt;strong&gt;offset&lt;/strong&gt; within the piece, and its &lt;strong&gt;length&lt;/strong&gt;. When we make requests for data from peers, we are actually requesting &lt;em&gt;blocks&lt;/em&gt;. A block is usually 16KB large, meaning that a single 256 KB piece might actually require 16 requests.&lt;/p&gt;
+&lt;p&gt;Network round-trips are expensive, and requesting each block one by one will absolutely tank the performance of our download. Therefore, it’s important to &lt;strong&gt;pipeline&lt;/strong&gt; our requests such that we keep up a constant pressure of some number of unfulfilled requests. This can increase the throughput of our connection by an order of magnitude.&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pipelining.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/pipelining.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;接下来进行请求，请求的格式是固定的。&lt;/p&gt;
+&lt;p&gt;request: &amp;lt;len=0013&amp;gt;&amp;lt;id=6&amp;gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;request&lt;/strong&gt; message is fixed length, and is used to request a block. The payload contains the following information:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;index&lt;/strong&gt;: integer specifying the zero-based piece index&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;begin&lt;/strong&gt;: integer specifying the zero-based byte offset within the piece&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;length&lt;/strong&gt;: integer specifying the requested length.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;项目作者设置了pipeline的MaxBacklog为5，即连续发送5次request，然后去readMessage。示意图如下&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%91%E9%80%81.PNG&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%91%E9%80%81.PNG&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;piece: &amp;lt;len=0009+X&amp;gt;&amp;lt;id=7&amp;gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;piece&lt;/strong&gt; message is variable length, where X is the length of the block. The payload contains the following information:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;index&lt;/strong&gt;: integer specifying the zero-based piece index&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;begin&lt;/strong&gt;: integer specifying the zero-based byte offset within the piece&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;block&lt;/strong&gt;: block of data, which is a subset of the piece specified by index.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;client收到messageID为piece的消息后，解析出payload中的msg.Payload[8:]的字节存入buffer中。&lt;/p&gt;
+&lt;p&gt;看一眼下载到的内容：&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E4%B8%8B%E8%BD%BD%E5%88%B0%E7%9A%84%E5%86%85%E5%AE%B9.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/%E4%B8%8B%E8%BD%BD%E5%88%B0%E7%9A%84%E5%86%85%E5%AE%B9.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;是一个16K的block，这就是我们真正需要的内容。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;其中peer如果下载校验完成新的piece后，还会发来have消息。让我们来更新bitfield。&lt;/p&gt;
+&lt;p&gt;have消息的格式为：&lt;/p&gt;
+&lt;p&gt;have: &amp;lt;len=0005&amp;gt;&amp;lt;id=4&amp;gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;have&lt;/strong&gt; message is fixed length. The payload is the zero-based index of a piece that has just been successfully downloaded and verified via the hash.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;将一块piece存储到buffer中，此时attemptDownloadPiece函数就结束了，如果其中有err发生，就将此piece再次放到管道中，等待其他纤程再次分配到这个piece继续下载。&lt;/p&gt;
+&lt;p&gt;然后进入checkIntegrity函数，对buffer进行SHA-1，之后再对比piece的SHA-1，以校验下载的完整性。&lt;/p&gt;
+&lt;p&gt;最后将校验结果正确的buffer放入result管道。&lt;/p&gt;
+&lt;h3 id=&#34;拼凑&#34;&gt;拼凑&lt;/h3&gt;
+&lt;p&gt;将result从管道中取出，拼成完整的buffer。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//创建最终存储的buf数组
+&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;buf := &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;([]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;byte&lt;/span&gt;, t.Length)
+
+res := &amp;lt;-results
+begin, end := t.&lt;span style=&#34;color:#008b45&#34;&gt;calculateBoundsForPiece&lt;/span&gt;(res.index)
+&lt;span style=&#34;color:#658b00&#34;&gt;copy&lt;/span&gt;(buf[begin:end], res.buf)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后将buf写入文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;outFile, err := os.&lt;span style=&#34;color:#008b45&#34;&gt;Create&lt;/span&gt;(path)
+_, err = outFile.&lt;span style=&#34;color:#008b45&#34;&gt;Write&lt;/span&gt;(buf)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;到此位置文件的P2P下载就结束了。&lt;/p&gt;
+&lt;p&gt;此项目的不足：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;支支持.torrent文件，并不支持磁力链接&lt;/li&gt;
+&lt;li&gt;只支持HTTP类型的Tracker，可以查看https://ngosang.github.io/trackerslist/trackers_best.txt，许多Tracker服务器都是UDP的&lt;/li&gt;
+&lt;li&gt;不支持包含多文件的BT种子&lt;/li&gt;
+&lt;li&gt;吸血鬼模式，并不支持上传&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;虽然有许多不足，但是已经对于了解P2P网络已经足够。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;为保持简短，本章到此为止。下一章再使用Wireshark进行抓包分析。&lt;/p&gt;
+&lt;p&gt;由于BT种子还是存在Tracker服务器，并不是完全的去中心化，容易遭到封锁，所以使用DHT的磁力链接已经成为P2P下载的主流，之后单独开篇介绍。&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/veggiedefender/torrent-client&#34;&gt;https://github.com/veggiedefender/torrent-client&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.jse.li/posts/torrent/&#34;&gt;https://blog.jse.li/posts/torrent/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://wiki.theory.org/BitTorrentSpecification&#34;&gt;https://wiki.theory.org/BitTorrentSpecification&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.aneasystone.com/archives/2015/05/analyze-magnet-protocol-using-wireshark.html&#34;&gt;https://www.aneasystone.com/archives/2015/05/analyze-magnet-protocol-using-wireshark.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://colobu.com/2016/07/01/the-complete-guide-to-golang-net-http-timeouts/&#34;&gt;https://colobu.com/2016/07/01/the-complete-guide-to-golang-net-http-timeouts/&lt;/a&gt;&lt;/p&gt;
+- https://chengleqi.github.io/posts/build-a-torrent-client-by-golang/ - 2021 chengleqi</description>
+        </item>
+    
+    
+  </channel>
+</rss> 
