@@ -13,6 +13,40 @@
     
     
         <item>
+        <title>About</title>
+        <link>https://chengleqi.com/about/</link>
+        <pubDate>Thu, 13 May 2021 20:42:09 +0800</pubDate>
+        
+        <guid>https://chengleqi.com/about/</guid>
+        <description>chengleqi&#39;s blog https://chengleqi.com/about/ -&lt;h3 id=&#34;gopher&#34;&gt;Gopher&lt;/h3&gt;
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+&lt;figure align=&#34;Center&#34; role=&#34;group&#34; aria-describedby=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+  &lt;a href=&#34;https://chengleqi.com/about/GOPHER_PARAKEET.png&#34; class=&#34;img-link&#34;&gt;
+    &lt;img src=&#34;https://chengleqi.com/about/GOPHER_PARAKEET_hufdac6ff2033c8ad8d6e8399b895f7b39_618150_200x0_resize_box_2.png&#34;&gt;
+  &lt;/a&gt;
+  &lt;figcaption id=&#34;caption-d41d8cd98f00b204e9800998ecf8427e&#34;&gt;
+    
+  &lt;/figcaption&gt;
+&lt;/figure&gt;
+- https://chengleqi.com/about/ - 2021 chengleqi</description>
+        </item>
+    
+    
+    
+        <item>
         <title>Build a torrent-client by Golang</title>
         <link>https://chengleqi.com/posts/build-a-torrent-client-by-golang/</link>
         <pubDate>Wed, 31 Mar 2021 20:11:23 +0800</pubDate>
