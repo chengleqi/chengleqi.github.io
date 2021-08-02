@@ -7,7 +7,7 @@
 <meta property="og:description" content="效果 在vscode中写作，写完直接commit push，完成文章的发布。
 workflow 如下图:
  workflow(点击图片跳转至Live Editor)
-  使用docker进行本地预览 参考了jojomi/docker-hugo重写了Dockerfile和构建镜像并且启动容器的脚本chengleqi/docker-hugo。
+  使用Docker进行本地预览 参考了jojomi/docker-hugo重写了Dockerfile和构建镜像并且启动容器的脚本chengleqi/docker-hugo。
 镜像的README   先在浏览器中下载最新版hugo binary(extend版本) 将下载好的hugo binary放在项目根目录 执行./build_and_start_hugo.sh 构建镜像并运行容器 打开浏览器 localhost:1313     Note  在docker run的时候挂载了blog目录用于hugo server，并添加了--rm参数，退出容器后直接删除容器。   使用GitHub Actions自动构建并部署 此处参考了Arnab Kumar Shil的文章。配置了GitHub Actions的流水线。脚本如下:
 name:github pageson:push:branches:- main # Set a branch to deploypull_request:jobs:deploy:runs-on:ubuntu-20.04steps:- uses:actions/checkout@v2with:submodules:true# Fetch Hugo themes (true OR recursive)fetch-depth:0# Fetch all history for .GitInfo and .Lastmod- name:Setup Hugouses:peaceiris/actions-hugo@v2with:hugo-version:'latest'extended:true- name:Buildrun:hugo --minify- name:Deployuses:peaceiris/actions-gh-pages@v3if:github.ref == 'refs/heads/main'with:personal_token:${{ secrets.">
 <meta property="og:type" content="article">
@@ -19,13 +19,13 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <meta name=twitter:description content="效果 在vscode中写作，写完直接commit push，完成文章的发布。
 workflow 如下图:
  workflow(点击图片跳转至Live Editor)
-  使用docker进行本地预览 参考了jojomi/docker-hugo重写了Dockerfile和构建镜像并且启动容器的脚本chengleqi/docker-hugo。
+  使用Docker进行本地预览 参考了jojomi/docker-hugo重写了Dockerfile和构建镜像并且启动容器的脚本chengleqi/docker-hugo。
 镜像的README   先在浏览器中下载最新版hugo binary(extend版本) 将下载好的hugo binary放在项目根目录 执行./build_and_start_hugo.sh 构建镜像并运行容器 打开浏览器 localhost:1313     Note  在docker run的时候挂载了blog目录用于hugo server，并添加了--rm参数，退出容器后直接删除容器。   使用GitHub Actions自动构建并部署 此处参考了Arnab Kumar Shil的文章。配置了GitHub Actions的流水线。脚本如下:
 name:github pageson:push:branches:- main # Set a branch to deploypull_request:jobs:deploy:runs-on:ubuntu-20.04steps:- uses:actions/checkout@v2with:submodules:true# Fetch Hugo themes (true OR recursive)fetch-depth:0# Fetch all history for .GitInfo and .Lastmod- name:Setup Hugouses:peaceiris/actions-hugo@v2with:hugo-version:'latest'extended:true- name:Buildrun:hugo --minify- name:Deployuses:peaceiris/actions-gh-pages@v3if:github.ref == 'refs/heads/main'with:personal_token:${{ secrets.">
 <meta name=application-name content="chengleqi's blog">
 <meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/test/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Hugo+Docker+GitHub Actions优化博客workflow","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/test\/"},"genre":"posts","wordcount":66,"url":"https:\/\/chengleqi.com\/posts\/test\/","datePublished":"2021-08-01T21:08:29+08:00","dateModified":"2021-08-01T21:08:29+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/test/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Hugo+Docker+GitHub Actions优化博客workflow","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/test\/"},"genre":"posts","wordcount":68,"url":"https:\/\/chengleqi.com\/posts\/test\/","datePublished":"2021-08-01T21:08:29+08:00","dateModified":"2021-08-01T21:08:29+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
@@ -59,7 +59,7 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <div class=toc-content id=toc-content-auto></div>
 </div><article class="page single" data-toc=disable><div class=single-card><h2 class="single-title animated flipInX">Hugo+Docker+GitHub Actions优化博客workflow</h2><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span></div>
-<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-01>2021-08-01</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;66 words</span>&nbsp;
+<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-01>2021-08-01</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;68 words</span>&nbsp;
 <span><i class="far fa-clock fa-fw"></i>&nbsp;One minute</span>&nbsp;</div>
 </div>
 <hr><div class="details toc" id=toc-static data-kept>
@@ -72,7 +72,7 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <li><a href=#效果>效果</a></li>
 <li><a href=#workflow>workflow</a>
 <ul>
-<li><a href=#使用docker进行本地预览>使用docker进行本地预览</a></li>
+<li><a href=#使用docker进行本地预览>使用Docker进行本地预览</a></li>
 <li><a href=#使用github-actions自动构建并部署>使用GitHub Actions自动构建并部署</a></li>
 </ul>
 </li>
@@ -86,7 +86,7 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <p>workflow(点击图片跳转至Live Editor)</p>
 </figcaption>
 </figure>
-<h3 id=使用docker进行本地预览>使用docker进行本地预览</h3>
+<h3 id=使用docker进行本地预览>使用Docker进行本地预览</h3>
 <p>参考了<a href=https://github.com/jojomi/docker-hugo target=_blank rel="noopener noreffer">jojomi/docker-hugo</a>重写了Dockerfile和构建镜像并且启动容器的脚本<a href=https://github.com/chengleqi/docker-hugo target=_blank rel="noopener noreffer">chengleqi/docker-hugo</a>。</p>
 <div class="details admonition tip open">
 <div class="details-summary admonition-title">
@@ -154,7 +154,11 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <i class="icon fas fa-lightbulb fa-fw"></i>Tip<i class="details-icon fas fa-angle-right fa-fw"></i>
 </div>
 <div class=details-content>
-<div class=admonition-content>存储blog源文件的repo需要访问github.io repo需要设置并使用<code>personal_token: ${{ secrets.ACTION_ACCESS_TOKEN }}</code></div>
+<div class=admonition-content><ol>
+<li>存储blog源文件的repo访问github.io repo需要设置<code>personal_token: ${{ secrets.ACTION_ACCESS_TOKEN }}</code></li>
+<li>在Deploy job中需要指定CNAME，会自动生成CNAME文件，当然也可以手动添加，<a href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#use-a-custom-domain target=_blank rel="noopener noreffer">参考Hugo官网</a>。</li>
+</ol>
+</div>
 </div>
 </div>
 </div><div class=post-footer id=post-footer>
