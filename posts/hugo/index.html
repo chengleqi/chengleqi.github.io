@@ -3,7 +3,7 @@
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta name=robots content="noodp">
-<title>Hugo+Docker+GitHub Actions优化博客workflow - chengleqi's blog</title><meta name=description content><meta property="og:title" content="Hugo+Docker+GitHub Actions优化博客workflow">
+<title>Docker+GitHub Actions优化博客workflow - chengleqi's blog</title><meta name=description content><meta property="og:title" content="Docker+GitHub Actions优化博客workflow">
 <meta property="og:description" content="效果 在vscode中写作，写完直接commit push，完成文章的发布。
 workflow 如下图:
  workflow(点击图片跳转至Live Editor)
@@ -13,9 +13,9 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://chengleqi.com/posts/hugo/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-08-01T21:08:29+08:00">
-<meta property="article:modified_time" content="2021-08-01T21:08:29+08:00">
+<meta property="article:modified_time" content="2021-08-03T17:02:03+08:00">
 <meta name=twitter:card content="summary">
-<meta name=twitter:title content="Hugo+Docker+GitHub Actions优化博客workflow">
+<meta name=twitter:title content="Docker+GitHub Actions优化博客workflow">
 <meta name=twitter:description content="效果 在vscode中写作，写完直接commit push，完成文章的发布。
 workflow 如下图:
  workflow(点击图片跳转至Live Editor)
@@ -25,7 +25,7 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <meta name=application-name content="chengleqi's blog">
 <meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/hugo/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Hugo+Docker+GitHub Actions优化博客workflow","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/hugo\/"},"genre":"posts","wordcount":68,"url":"https:\/\/chengleqi.com\/posts\/hugo\/","datePublished":"2021-08-01T21:08:29+08:00","dateModified":"2021-08-01T21:08:29+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/hugo/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Docker+GitHub Actions优化博客workflow","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/hugo\/"},"genre":"posts","wordcount":68,"url":"https:\/\/chengleqi.com\/posts\/hugo\/","datePublished":"2021-08-01T21:08:29+08:00","dateModified":"2021-08-03T17:02:03+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
@@ -57,7 +57,7 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 <div class=container><div class=toc id=toc-auto>
 <h2 class=toc-title>Contents</h2>
 <div class=toc-content id=toc-content-auto></div>
-</div><article class="page single" data-toc=disable><div class=single-card><h2 class="single-title animated flipInX">Hugo+Docker+GitHub Actions优化博客workflow</h2><div class=post-meta>
+</div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg data-srcset="https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg, https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg 1.5x, https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg 2x" data-sizes=auto alt=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg title=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">Docker+GitHub Actions优化博客workflow</h2><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span></div>
 <div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-01>2021-08-01</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;68 words</span>&nbsp;
 <span><i class="far fa-clock fa-fw"></i>&nbsp;One minute</span>&nbsp;</div>
@@ -163,10 +163,14 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 </div>
 </div><div class=post-footer id=post-footer>
 <div class=post-info><div class=post-info-line><div class=post-info-mod>
-<span>Updated on 2021-08-01</span>
+<span>Updated on 2021-08-03</span>
 </div><div class=post-info-mod></div>
+</div><div class=post-info-share>
+<span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/hugo/ data-title="Docker+GitHub Actions优化博客workflow" data-via=fuck_kubernetes><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/hugo/><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/hugo/ data-title="Docker+GitHub Actions优化博客workflow" data-image=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="Share on Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/hugo/ data-title="Docker+GitHub Actions优化博客workflow"><i class="fab fa-evernote fa-fw"></i></a></span>
 </div></div><div class=post-nav></div></div>
-</div></article></div>
+</div><div id=comments class=single-card><div id=vssue></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://github.com/meteorlxy/vssue>Vssue</a>.
+</noscript></div></article></div>
 </main>
 <footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.86.1">Hugo</a> | Theme - <a href=https://github.com/khusika/FeelIt target=_blank rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
 </div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/>chengleqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
@@ -175,4 +179,6 @@ name:github pageson:push:branches:- main # Set a branch to deploypull_request:jo
 </div>
 <div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
 <i class="fas fa-chevron-up fa-fw"></i>
-</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:10},comment:{},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0}}</script><script src=/js/theme.min.js></script></body></html>
+</a><a href=# id=view-comments class=fixed-button title="View Comments">
+<i class="fas fa-comment-alt fa-fw"></i>
+</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/vue/vssue/vssue.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/vue/vue.runtime.js></script><script src=/lib/vue/vssue/vssue.github.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/twemoji/twemoji.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:10},comment:{vssue:{clientID:"7e0e077deba6c51540c9",clientSecret:"02cc5e3df375e4da463c2137eed0ad7af6235272",owner:"chengleqi",repo:"vssue-demo",title:"Docker+GitHub Actions优化博客workflow"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},twemoji:!0}</script><script src=/js/theme.min.js></script></body></html>
