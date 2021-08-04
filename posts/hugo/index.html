@@ -111,7 +111,7 @@
 </figcaption>
 </figure>
 上图是用<a href=https://mermaid-js.github.io/mermaid-live-editor/edit##eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgZGlyZWN0aW9uIEJUXG4gICAgc3ViZ3JhcGggbG9jYWxfd29ya2Zsb3dcbiAgICAgICAgZGlyZWN0aW9uIFJMXG4gICAgICAgIEEtLT5857yW5YaZbWFya2Rvd27lubbkvb_nlKjmj5Lku7bpooTop4h8WShkaXNrKVxuICAgICAgICBZLS0-fOaMgui9veWNmuWuouebruW9lXxCKGRvY2tlcilcbiAgICAgICAgQi0tPnzmmKDlsIQxMzEz56uv5Y-jfFgoYnJvc3dlcilcbiAgICAgICAgWC0tPnzlrp7ml7bpooTop4h8QSgodnNjb2RlKSlcbiAgICBlbmRcbiAgICAgICAgbG9jYWxfd29ya2Zsb3ctLT58Z2l0IHB1c2h8Qyhzb3VyY2UgcmVwbylcbiAgICBzdWJncmFwaCBnaXRodWJfYWN0aW9uc19DSS9DRF9waXBsaW5lXG4gICAgICAgIGRpcmVjdGlvbiBMUlxuICAgICAgICBEKHNldHVwIGVudiktLT5FKGNoZWNrb3V0KS0tPkYoc2V0dXAgaHVnbyktLT5HKGJ1aWxkKS0tPkgoZGVwbG95KVxuICAgIGVuZFxuICAgIEMtLT58cHVzaOinpuWPkWdpdGh1Yl9hY3Rpb25zfGdpdGh1Yl9hY3Rpb25zX0NJL0NEX3BpcGxpbmVcbiAgICBzdWJncmFwaCBnaXRodWIuaW9fcmVwb1xuICAgICAgICBkaXJlY3Rpb24gUkxcbiAgICAgICAgSihkb21haW4pLS0-fENOQU1FfEkoZ2l0aHViLmlvKVxuICAgIGVuZFxuICAgIGdpdGh1Yl9hY3Rpb25zX0NJL0NEX3BpcGxpbmUtLT585L2_55SocGVyc29uYWxfdG9rZW7mjqjpgIHliLBnaXRodWIuaW9fcmVwb3xnaXRodWIuaW9fcmVwbyIsIm1lcm1haWQiOiJ7XG4gIFwidGhlbWVcIjogXCJkZWZhdWx0XCJcbn0iLCJ1cGRhdGVFZGl0b3IiOnRydWUsImF1dG9TeW5jIjp0cnVlLCJ1cGRhdGVEaWFncmFtIjpmYWxzZX0 target=_blank rel="noopener noreffer">mermaid</a>画的，flowchart是mermaid高版本的<a href="https://mermaid-js.github.io/mermaid/#/flowchart?id=beta-flowcharts" target=_blank rel="noopener noreffer">feature</a>，在我使用Feelit主题shortcode的时候还没有得到支持，提了个<a href=https://github.com/khusika/FeelIt/issues/53 target=_blank rel="noopener noreffer">issue</a>，在这次更新中得到了支持。</p>
-<p>mermaid shortcode在手机浏览器中没有得到很好的支持，故换回figure shortcode。(2021年 08月 04日 星期三 15:30:15 CST)</p>
+<p>mermaid shortcode在手机浏览器中没有得到很好的支持，换回figure shortcode。(2021年 08月 04日 星期三 15:30:15 CST)</p>
 <h3 id=使用docker进行本地预览>使用Docker进行本地预览</h3>
 <p>参考了<a href=https://github.com/jojomi/docker-hugo target=_blank rel="noopener noreffer">jojomi/docker-hugo</a>重写了Dockerfile和构建镜像并且启动容器的脚本<a href=https://github.com/chengleqi/docker-hugo target=_blank rel="noopener noreffer">chengleqi/docker-hugo</a>。</p>
 <div class="details admonition tip open">
@@ -189,7 +189,7 @@
 </div>
 <h3 id=启用algolia搜索>启用algolia搜索</h3>
 <p>因为algolia需要上传索引文件，主题的作者推荐了一款<a href=https://github.com/chrisdmacrae/atomic-algolia target=_blank rel="noopener noreffer">Algolia Atomic插件</a>用来完成自动化上传。</p>
-<p>这款插件需要node和npm，我参考了<a href=https://yqqy.top/hugo-github-actions-aliyun/#%E8%A1%A5%E5%85%85 target=_blank rel="noopener noreffer">这篇文章</a>，直接在GitHub Ations分配的VPS中配置不成功。</p>
+<p>这款插件需要node和npm，我参考了<a href=https://yqqy.top/hugo-github-actions-aliyun/#%E8%A1%A5%E5%85%85 target=_blank rel="noopener noreffer">这篇文章</a>，直接在GitHub Actions分配的VPS中配置不成功。</p>
 <p>于是找到了<a href=https://github.com/liangyuanpeng/liangyuanpeng.github.io/blob/source/.github/workflows/hugo.yml target=_blank rel="noopener noreffer">这个方案</a>，作者将atomic-algolia封装进docker容器中，启动立即执行<code>atomic-aloglia</code>，一次成功，只是多出了拉取镜像的时间。我已将镜像同步至Docker Hub进行解耦。</p>
 </div><div class=post-footer id=post-footer>
 <div class=post-info><div class=post-info-tag><span><a href=/tags/docker/>Docker</a>
