@@ -15,7 +15,7 @@
 <meta name=application-name content="chengleqi's blog">
 <meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/hugo/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Docker+GitHub Actions优化博客workflow","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/hugo\/"},"genre":"posts","keywords":"Docker, CI\/CD","wordcount":878,"url":"https:\/\/chengleqi.com\/posts\/hugo\/","datePublished":"2021-08-01T21:08:29+08:00","dateModified":"2021-08-04T12:47:39+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/hugo/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Docker+GitHub Actions优化博客workflow","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/hugo\/"},"genre":"posts","keywords":"Docker, CI\/CD","wordcount":1039,"url":"https:\/\/chengleqi.com\/posts\/hugo\/","datePublished":"2021-08-01T21:08:29+08:00","dateModified":"2021-08-04T12:47:39+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
@@ -33,7 +33,7 @@
 <span class="search-button search-loading" id=search-loading-desktop>
 <i class="fas fa-spinner fa-fw fa-spin"></i>
 </span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+</span><a class=menu-item href=/index.xml title=RSS><i class="fas fa-rss fa-fw" title=RSS></i> </a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
 <i class="fas fa-adjust fa-fw"></i>
 </a>
 </div>
@@ -65,7 +65,8 @@
 <a href=# class=search-cancel id=search-cancel-mobile>
 取消
 </a>
-</div><a class=menu-item href=/posts/ title>文章</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/about/ title="holy fuck!能找到这来不容易啊">关于🧑‍💻</a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io title rel="noopener noreffer" target=_blank><i class="fab fa-github"></i></a><a class=menu-item href=https://hub.docker.com/u/chengleqi title rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i></a><div class=menu-item><a href=javascript:void(0); class=theme-switch title=切换主题>
+</div><a class=menu-item href=/posts/ title>文章</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/about/ title="holy fuck!能找到这来不容易啊">关于🧑‍💻</a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io title rel="noopener noreffer" target=_blank><i class="fab fa-github"></i></a><a class=menu-item href=https://hub.docker.com/u/chengleqi title rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i></a><div class=menu-item><a href=/index.xml title=RSS><i class="fas fa-rss fa-fw" title=RSS></i> </a>
+<span>&nbsp;|&nbsp;</span><a href=javascript:void(0); class=theme-switch title=切换主题>
 <i class="fas fa-adjust fa-fw"></i>
 </a>
 </div></div>
@@ -81,8 +82,8 @@
 <div class=toc-content id=toc-content-auto></div>
 </div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg data-srcset="https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg, https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg 1.5x, https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg 2x" data-sizes=auto alt=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg title=https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">Docker+GitHub Actions优化博客workflow</h2><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/hugo/><i class="far fa-folder fa-fw"></i>Hugo</a></span></div>
-<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-01>2021-08-01</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 878 字</span>&nbsp;
-<span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟</span>&nbsp;</div>
+<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-01>2021-08-01</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1039 字</span>&nbsp;
+<span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟</span>&nbsp;</div>
 </div>
 <hr><div class="details toc" id=toc-static data-kept>
 <div class="details-summary toc-title">
@@ -96,6 +97,7 @@
 <ul>
 <li><a href=#使用docker进行本地预览>使用Docker进行本地预览</a></li>
 <li><a href=#使用github-actions自动构建并部署>使用GitHub Actions自动构建并部署</a></li>
+<li><a href=#启用algolia搜索>启用algolia搜索</a></li>
 </ul>
 </li>
 </ul>
@@ -185,6 +187,10 @@
 </div>
 </div>
 </div>
+<h3 id=启用algolia搜索>启用algolia搜索</h3>
+<p>因为algolia需要上传索引文件，主题的作者推荐了一款<a href=https://github.com/chrisdmacrae/atomic-algolia target=_blank rel="noopener noreffer">Algolia Atomic插件</a>用来完成自动化上传。</p>
+<p>这款插件需要node和npm，我参考了<a href=https://yqqy.top/hugo-github-actions-aliyun/#%E8%A1%A5%E5%85%85 target=_blank rel="noopener noreffer">这篇文章</a>，直接在GitHub Ations分配的VPS中配置不成功。</p>
+<p>于是找到了<a href=https://github.com/liangyuanpeng/liangyuanpeng.github.io/blob/source/.github/workflows/hugo.yml target=_blank rel="noopener noreffer">这个方案</a>作者将atomic-algolia封装进docker容器中，启动立即执行</p>
 </div><div class=post-footer id=post-footer>
 <div class=post-info><div class=post-info-tag><span><a href=/tags/docker/>Docker</a>
 </span><span><a href=/tags/ci/cd/>CI/CD</a>
