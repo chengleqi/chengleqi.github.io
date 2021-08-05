@@ -80,7 +80,7 @@
 <div class=container><div class=toc id=toc-auto>
 <h2 class=toc-title>目录</h2>
 <div class=toc-content id=toc-content-auto></div>
-</div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=images/kube-prometheus-logo.png data-srcset="/posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png, images/kube-prometheus-logo.png 1.5x, /posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png 2x" data-sizes=auto alt=/posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png title=/posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">Kubernetes部署kube-prometheus</h2><div class=post-meta>
+</div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png data-srcset="https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png, https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png 1.5x, https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png 2x" data-sizes=auto alt=https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png title=https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">Kubernetes部署kube-prometheus</h2><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/kubernetes/><i class="far fa-folder fa-fw"></i>Kubernetes</a></span></div>
 <div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-05>2021-08-05</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1326 字</span>&nbsp;
 <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟</span>&nbsp;</div>
@@ -135,8 +135,8 @@ kubectl create -f manifests/setup
 <span class=k>until</span> kubectl get servicemonitors --all-namespaces <span class=p>;</span> <span class=k>do</span> date<span class=p>;</span> sleep 1<span class=p>;</span> <span class=nb>echo</span> <span class=s2>&#34;&#34;</span><span class=p>;</span> <span class=k>done</span>
 kubectl create -f manifests/
 </code></pre></div><p>由于创建镜像需要拉取的镜像托管在<a href=https://quay.io/ target=_blank rel="noopener noreffer">quay.io</a>，会出现ImagePullBackOff错误：
-<figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png title=ImagePullBackOff.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png data-sub-html="<h2>ImagePullBackOff</h2>">
-<img class=lazyload src=/svg/loading.min.svg data-src=images/ImagePullBackOff.png data-srcset="/posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png, images/ImagePullBackOff.png 1.5x, /posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png 2x" data-sizes=auto alt=ImagePullBackOff.png>
+<figure><a class=lightgallery href=https://i.loli.net/2021/08/05/cTvM2NVPwAOXQlW.png title=ImagePullBackOff.png data-thumbnail=https://i.loli.net/2021/08/05/cTvM2NVPwAOXQlW.png data-sub-html="<h2>ImagePullBackOff</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/cTvM2NVPwAOXQlW.png data-srcset="https://i.loli.net/2021/08/05/cTvM2NVPwAOXQlW.png, https://i.loli.net/2021/08/05/cTvM2NVPwAOXQlW.png 1.5x, https://i.loli.net/2021/08/05/cTvM2NVPwAOXQlW.png 2x" data-sizes=auto alt=ImagePullBackOff.png>
 </a><figcaption class=image-caption>ImagePullBackOff</figcaption>
 </figure>
 <p><code>k describe pods -n monitoring prometheus-operator-75d9b475d9-f29g8</code>检查一下，是</p>
@@ -165,8 +165,8 @@ kubectl create -f manifests/
 </div>
 <p>brancz/kube-rbac-proxy:v0.11.0也重复上述步骤，此时就有了kube-operator所需的镜像。</p>
 <p>使用<code>kind load docker-image quay.io/brancz/kube-rbac-proxy:v0.11.0 quay.io/prometheus-operator/prometheus-operator:v0.49.0 --name cluster</code>将镜像加载进kind集群，然后prometheus-operator-75d9b475d9-f29g8这个pod就正常运行了。</p>
-<figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png title=kube-operator-pod-success.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png data-sub-html="<h2>kube-operator-pod处于Running状态</h2>">
-<img class=lazyload src=/svg/loading.min.svg data-src=images/kube-operator-pod-success.png data-srcset="/posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png, images/kube-operator-pod-success.png 1.5x, /posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png 2x" data-sizes=auto alt=kube-operator-pod-success.png width=900px>
+<figure><a class=lightgallery href=https://i.loli.net/2021/08/05/Lx8o1u3S4NdDegH.png title=kube-operator-pod-success.png data-thumbnail=https://i.loli.net/2021/08/05/Lx8o1u3S4NdDegH.png data-sub-html="<h2>kube-operator-pod处于Running状态</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/Lx8o1u3S4NdDegH.png data-srcset="https://i.loli.net/2021/08/05/Lx8o1u3S4NdDegH.png, https://i.loli.net/2021/08/05/Lx8o1u3S4NdDegH.png 1.5x, https://i.loli.net/2021/08/05/Lx8o1u3S4NdDegH.png 2x" data-sizes=auto alt=kube-operator-pod-success.png width=900px>
 </a><figcaption class=image-caption>kube-operator-pod处于Running状态</figcaption>
 </figure>
 <p>若还有镜像报错，重复上述步骤，直到所有pod都处于Running状态，到此kube-prometheus部署成功。</p>
@@ -185,8 +185,8 @@ kubectl create -f manifests/
 <h3 id=grafana>grafana</h3>
 <p>同样端口转发</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>kubectl --namespace monitoring port-forward svc/grafana <span class=m>3000</span>
-</code></pre></div><figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/grafana-login.png title=grafana-login.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/grafana-login.png data-sub-html="<h2>grafana login</h2>">
-<img class=lazyload src=/svg/loading.min.svg data-src=images/grafana-login.png data-srcset="/posts/21-08-05/kube-prometheus/images/grafana-login.png, images/grafana-login.png 1.5x, /posts/21-08-05/kube-prometheus/images/grafana-login.png 2x" data-sizes=auto alt=grafana-login.png width=900px>
+</code></pre></div><figure><a class=lightgallery href=https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png title=grafana-login.png data-thumbnail=https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png data-sub-html="<h2>grafana login</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png data-srcset="https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png, https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png 1.5x, https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png 2x" data-sizes=auto alt=grafana-login.png width=900px>
 </a><figcaption class=image-caption>grafana login</figcaption>
 </figure>
 <div class="details admonition tip open">
@@ -198,8 +198,8 @@ kubectl create -f manifests/
 </div>
 </div>
 <p>之后就可以尝试自带的面板了(例如node-exporter)：</p>
-<figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png title=grafana-node-exporter.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png data-sub-html="<h2>grafana node-exporter</h2>">
-<img class=lazyload src=/svg/loading.min.svg data-src=images/grafana-node-exporter.png data-srcset="/posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png, images/grafana-node-exporter.png 1.5x, /posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png 2x" data-sizes=auto alt=grafana-node-exporter.png width=900px>
+<figure><a class=lightgallery href=https://i.loli.net/2021/08/05/jo4Bm7ASNWUhpvc.png title=grafana-node-exporter.png data-thumbnail=https://i.loli.net/2021/08/05/jo4Bm7ASNWUhpvc.png data-sub-html="<h2>grafana node-exporter</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/jo4Bm7ASNWUhpvc.png data-srcset="https://i.loli.net/2021/08/05/jo4Bm7ASNWUhpvc.png, https://i.loli.net/2021/08/05/jo4Bm7ASNWUhpvc.png 1.5x, https://i.loli.net/2021/08/05/jo4Bm7ASNWUhpvc.png 2x" data-sizes=auto alt=grafana-node-exporter.png width=900px>
 </a><figcaption class=image-caption>grafana node-exporter</figcaption>
 </figure>
 <p>Grafana不仅可以对接Prometheus，还可以对接zabbix等很多数据源，是一个非常漂亮和好用的可视化工具。</p>
@@ -217,7 +217,7 @@ kubectl create -f manifests/
 <span>更新于 2021-08-05</span>
 </div><div class=post-info-mod></div>
 </div><div class=post-info-share>
-<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-via=fuck_kubernetes data-hashtags=Prometheus><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-hashtag=Prometheus><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-image=images/kube-prometheus-logo.png><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus><i class="fab fa-evernote fa-fw"></i></a></span>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-via=fuck_kubernetes data-hashtags=Prometheus><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-hashtag=Prometheus><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-image=https://i.loli.net/2021/08/05/eSjfQwbAphzxkPq.png><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus><i class="fab fa-evernote fa-fw"></i></a></span>
 </div></div><div class=post-nav><a href=/posts/21-08-01/hugo/ class=prev rel=prev title="Docker+GitHub Actions优化博客workflow"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
 </div><div id=comments class=single-card><div id=vssue></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://github.com/meteorlxy/vssue>Vssue</a>.
