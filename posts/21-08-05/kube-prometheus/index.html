@@ -1,0 +1,235 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<title>Kubernetes部署kube-prometheus - chengleqi's blog</title><meta name=description content><meta property="og:title" content="Kubernetes部署kube-prometheus">
+<meta property="og:description" content="使用kind创建集群 安装好kind后直接kind create cluster --config config.yaml --name cluster启动集群，config.yaml如下，是一个有一个master两个n">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://chengleqi.com/posts/21-08-05/kube-prometheus/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-08-05T16:41:30+08:00">
+<meta property="article:modified_time" content="2021-08-05T20:58:45+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Kubernetes部署kube-prometheus">
+<meta name=twitter:description content="使用kind创建集群 安装好kind后直接kind create cluster --config config.yaml --name cluster启动集群，config.yaml如下，是一个有一个master两个n">
+<meta name=application-name content="chengleqi's blog">
+<meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/21-08-05/kube-prometheus/><link rel=prev href=https://chengleqi.com/posts/21-08-01/hugo/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kubernetes部署kube-prometheus","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/21-08-05\/kube-prometheus\/"},"genre":"posts","keywords":"Prometheus","wordcount":1326,"url":"https:\/\/chengleqi.com\/posts\/21-08-05\/kube-prometheus\/","datePublished":"2021-08-05T16:41:30+08:00","dateModified":"2021-08-05T20:58:45+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title="chengleqi's blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png data-srcset="https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png, https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png 1.5x, https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png 2x" data-sizes=auto alt=https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png title=https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png><span id=id-1 class=typeit></span></a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/posts/> 文章 </a><a class=menu-item href=/categories/> 分类 </a><a class=menu-item href=/tags/> 标签 </a><a class=menu-item href=/about/ title="holy fuck!能找到这来不容易啊"> 关于 🧑‍💻</a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io rel="noopener noreffer" target=_blank><i class="fab fa-github"></i> </a><a class=menu-item href=https://hub.docker.com/u/chengleqi rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=# class="search-button search-toggle" id=search-toggle-desktop title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=# class="search-button search-clear" id=search-clear-desktop title=清空>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a class=menu-item href=/index.xml title=RSS><i class="fas fa-rss fa-fw" title=RSS></i> </a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title="chengleqi's blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png data-srcset="https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png, https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png 1.5x, https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png 2x" data-sizes=auto alt=https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png title=https://i.loli.net/2021/08/05/uOgpiZA47IhrmEX.png><span id=id-2 class=typeit></span></a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=# class="search-button search-toggle" id=search-toggle-mobile title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=# class="search-button search-clear" id=search-clear-mobile title=清空>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=# class=search-cancel id=search-cancel-mobile>
+取消
+</a>
+</div><a class=menu-item href=/posts/ title>文章</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/about/ title="holy fuck!能找到这来不容易啊">关于🧑‍💻</a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io title rel="noopener noreffer" target=_blank><i class="fab fa-github"></i></a><a class=menu-item href=https://hub.docker.com/u/chengleqi title rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i></a><div class=menu-item><a href=/index.xml title=RSS><i class="fas fa-rss fa-fw" title=RSS></i> </a>
+<span>&nbsp;|&nbsp;</span><a href=javascript:void(0); class=theme-switch title=切换主题>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div></div>
+</div>
+</header><div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div><main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>目录</h2>
+<div class=toc-content id=toc-content-auto></div>
+</div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=images/kube-prometheus-logo.png data-srcset="/posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png, images/kube-prometheus-logo.png 1.5x, /posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png 2x" data-sizes=auto alt=/posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png title=/posts/21-08-05/kube-prometheus/images/kube-prometheus-logo.png></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">Kubernetes部署kube-prometheus</h2><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/kubernetes/><i class="far fa-folder fa-fw"></i>Kubernetes</a></span></div>
+<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-05>2021-08-05</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1326 字</span>&nbsp;
+<span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟</span>&nbsp;</div>
+</div>
+<hr><div class="details toc" id=toc-static data-kept>
+<div class="details-summary toc-title">
+<span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#使用kind创建集群>使用kind创建集群</a></li>
+<li><a href=#部署kube-prometheus>部署kube-prometheus</a></li>
+<li><a href=#测试kube-prometheus>测试kube-prometheus</a>
+<ul>
+<li><a href=#prometheus>Prometheus</a></li>
+<li><a href=#grafana>grafana</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</div><div class=content id=content><h2 id=使用kind创建集群>使用kind创建集群</h2>
+<p>安装好kind后直接<code>kind create cluster --config config.yaml --name cluster</code>启动集群，config.yaml如下，是一个有一个master两个node的测试集群。测试完成后<code>kind delete cluster --name cluster</code>即可删除集群。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># three node (two workers) cluster config</span><span class=w>
+</span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Cluster</span><span class=w>
+</span><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>kind.x-k8s.io/v1alpha4</span><span class=w>
+</span><span class=w></span><span class=nt>nodes</span><span class=p>:</span><span class=w>
+</span><span class=w></span>- <span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>control-plane</span><span class=w>
+</span><span class=w></span>- <span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>worker</span><span class=w>
+</span><span class=w></span>- <span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>worker</span><span class=w>
+</span></code></pre></div><p>在尝试过minikube和kind后还是选择了kind。</p>
+<h2 id=部署kube-prometheus>部署kube-prometheus</h2>
+<p>一般在集群中部署Prometheus有三种方法：<a href=https://github.com/prometheus-operator/prometheus-operator target=_blank rel="noopener noreffer"><strong>Prometheus Operator</strong></a>、<a href=https://github.com/prometheus-operator/kube-prometheus target=_blank rel="noopener noreffer"><strong>kube-prometheus</strong></a> 和 <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack target=_blank rel="noopener noreffer"><strong>community helm chart</strong></a>。</p>
+<div class="details admonition quote open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-quote-right fa-fw"></i>部署方式比较<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content><p><em><strong>Prometheus Operator</strong></em></p>
+<p>The Prometheus Operator uses Kubernetes <a href=https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/ target=_blank rel="noopener noreffer">custom resources</a> to simplify the deployment and configuration of Prometheus, Alertmanager, and related monitoring components.</p>
+<p><em><strong>kube-prometheus</strong></em></p>
+<p>kube-prometheus provides example configurations for a complete cluster monitoring stack based on Prometheus and the Prometheus Operator. This includes deployment of multiple Prometheus and Alertmanager instances, metrics exporters such as the node_exporter for gathering node metrics, scrape target configuration linking Prometheus to various metrics endpoints, and example alerting rules for notification of potential issues in the cluster.</p>
+<p><em><strong>helm chart</strong></em></p>
+<p>The <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack target=_blank rel="noopener noreffer">prometheus-community/kube-prometheus-stack</a> helm chart provides a similar feature set to kube-prometheus. This chart is maintained by the Prometheus community. For more information, please see the <a href=https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#kube-prometheus-stack target=_blank rel="noopener noreffer">chart&rsquo;s readme</a></p>
+</div>
+</div>
+</div>
+<p>kube-prometheus提供了许多开箱即用的配置，例如Alertmanager、node-exporter以及Grafana dashboards。</p>
+<p>将<a href=https://github.com/prometheus-operator/kube-prometheus target=_blank rel="noopener noreffer">kube-prometheus</a>项目clone至本地，然后执行:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># Create the namespace and CRDs, and then wait for them to be available before creating the remaining resources</span>
+kubectl create -f manifests/setup
+<span class=k>until</span> kubectl get servicemonitors --all-namespaces <span class=p>;</span> <span class=k>do</span> date<span class=p>;</span> sleep 1<span class=p>;</span> <span class=nb>echo</span> <span class=s2>&#34;&#34;</span><span class=p>;</span> <span class=k>done</span>
+kubectl create -f manifests/
+</code></pre></div><p>由于创建镜像需要拉取的镜像托管在<a href=https://quay.io/ target=_blank rel="noopener noreffer">quay.io</a>，会出现ImagePullBackOff错误：
+<figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png title=ImagePullBackOff.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png data-sub-html="<h2>ImagePullBackOff</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=images/ImagePullBackOff.png data-srcset="/posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png, images/ImagePullBackOff.png 1.5x, /posts/21-08-05/kube-prometheus/images/ImagePullBackOff.png 2x" data-sizes=auto alt=ImagePullBackOff.png>
+</a><figcaption class=image-caption>ImagePullBackOff</figcaption>
+</figure>
+<p><code>k describe pods -n monitoring prometheus-operator-75d9b475d9-f29g8</code>检查一下，是</p>
+<ul>
+<li>quay.io/brancz/kube-rbac-proxy:v0.11.0</li>
+<li>quay.io/prometheus-operator/prometheus-operator:v0.49.0</li>
+</ul>
+<p>两个镜像拉取失败，这时借助阿里云容器镜像服务进行拉取。</p>
+<div class="details admonition note open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-pencil-alt fa-fw"></i>阿里云容器镜像服务构建镜像步骤<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content><ol>
+<li>创建GitHub repo，路径格式为：image-name/tag/Dockerfile</li>
+<li>在阿里云容器镜像服务中创建仓库image-name</li>
+<li>选择代码源为GitHub repo，选择海外构建</li>
+<li>进入仓库，添加构建规则，立即构建</li>
+<li>构建完成后登录到阿里云容器镜像服务： <code>docker login --username=xxx registry.cn-hangzhou.aliyuncs.com</code></li>
+<li>拉取构建好的镜像：<code>docker pull registry.cn-hangzhou.aliyuncs.com/chengleqi/prometheus-operator:v0.49.0</code></li>
+<li>进行retag：<code>docker tag registry.cn-hangzhou.aliyuncs.com/chengleqi/prometheus-operator:v0.49.0 quay.io/prometheus-operator/prometheus-operator:v0.49.0</code></li>
+<li>删除之前的镜像：<code>docker rmi registry.cn-hangzhou.aliyuncs.com/chengleqi/prometheus-operator:v0.49.0</code></li>
+</ol>
+</div>
+</div>
+</div>
+<p>brancz/kube-rbac-proxy:v0.11.0也重复上述步骤，此时就有了kube-operator所需的镜像。</p>
+<p>使用<code>kind load docker-image quay.io/brancz/kube-rbac-proxy:v0.11.0 quay.io/prometheus-operator/prometheus-operator:v0.49.0 --name cluster</code>将镜像加载进kind集群，然后prometheus-operator-75d9b475d9-f29g8这个pod就正常运行了。</p>
+<figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png title=kube-operator-pod-success.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png data-sub-html="<h2>kube-operator-pod处于Running状态</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=images/kube-operator-pod-success.png data-srcset="/posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png, images/kube-operator-pod-success.png 1.5x, /posts/21-08-05/kube-prometheus/images/kube-operator-pod-success.png 2x" data-sizes=auto alt=kube-operator-pod-success.png width=900px>
+</a><figcaption class=image-caption>kube-operator-pod处于Running状态</figcaption>
+</figure>
+<p>若还有镜像报错，重复上述步骤，直到所有pod都处于Running状态，到此kube-prometheus部署成功。</p>
+<h2 id=测试kube-prometheus>测试kube-prometheus</h2>
+<h3 id=prometheus>Prometheus</h3>
+<p>这里设置service的端口转发，接着就能进入Prometheus的UI尝试PromQL了。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>kubectl --namespace monitoring port-forward svc/prometheus-k8s <span class=m>9090</span>
+</code></pre></div><div class="details admonition info open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-info-circle fa-fw"></i>info<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content><a href=https://yunlzheng.gitbook.io/prometheus-book/ target=_blank rel="noopener noreffer">一本Prometheus的书</a></div>
+</div>
+</div>
+<h3 id=grafana>grafana</h3>
+<p>同样端口转发</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>kubectl --namespace monitoring port-forward svc/grafana <span class=m>3000</span>
+</code></pre></div><figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/grafana-login.png title=grafana-login.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/grafana-login.png data-sub-html="<h2>grafana login</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=images/grafana-login.png data-srcset="/posts/21-08-05/kube-prometheus/images/grafana-login.png, images/grafana-login.png 1.5x, /posts/21-08-05/kube-prometheus/images/grafana-login.png 2x" data-sizes=auto alt=grafana-login.png width=900px>
+</a><figcaption class=image-caption>grafana login</figcaption>
+</figure>
+<div class="details admonition tip open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-lightbulb fa-fw"></i>tip<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content>用户名和密码都是admin</div>
+</div>
+</div>
+<p>之后就可以尝试自带的面板了(例如node-exporter)：</p>
+<figure><a class=lightgallery href=/posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png title=grafana-node-exporter.png data-thumbnail=/posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png data-sub-html="<h2>grafana node-exporter</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=images/grafana-node-exporter.png data-srcset="/posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png, images/grafana-node-exporter.png 1.5x, /posts/21-08-05/kube-prometheus/images/grafana-node-exporter.png 2x" data-sizes=auto alt=grafana-node-exporter.png width=900px>
+</a><figcaption class=image-caption>grafana node-exporter</figcaption>
+</figure>
+<p>Grafana不仅可以对接Prometheus，还可以对接zabbix等很多数据源，是一个非常漂亮和好用的可视化工具。</p>
+<div class="details admonition info open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-info-circle fa-fw"></i>info<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content>还有一个自称Kubernetes IDE的工具<a href=https://k8slens.dev/ target=_blank rel="noopener noreffer">Lens</a>，我尝试了一下，也很好用。</div>
+</div>
+</div>
+</div><div class=post-footer id=post-footer>
+<div class=post-info><div class=post-info-tag><span><a href=/tags/prometheus/>Prometheus</a>
+</span></div><div class=post-info-line><div class=post-info-mod>
+<span>更新于 2021-08-05</span>
+</div><div class=post-info-mod></div>
+</div><div class=post-info-share>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-via=fuck_kubernetes data-hashtags=Prometheus><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-hashtag=Prometheus><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-image=images/kube-prometheus-logo.png><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus><i class="fab fa-evernote fa-fw"></i></a></span>
+</div></div><div class=post-nav><a href=/posts/21-08-01/hugo/ class=prev rel=prev title="Docker+GitHub Actions优化博客workflow"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
+</div><div id=comments class=single-card><div id=vssue></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://github.com/meteorlxy/vssue>Vssue</a>.
+</noscript></div></article></div>
+</main>
+<footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.87.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/khusika/FeelIt target=_blank rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
+</div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/>chengleqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer>
+</div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部>
+<i class="fas fa-chevron-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论>
+<i class="fas fa-comment-alt fa-fw"></i>
+</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/vue/vssue/vssue.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/vue/vue.runtime.js></script><script src=/lib/vue/vssue/vssue.github.min.js></script><script src=/lib/autocomplete/autocomplete.min.js></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/twemoji/twemoji.min.js></script><script src=/lib/typeit/typeit.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{vssue:{clientID:"7e0e077deba6c51540c9",clientSecret:"02cc5e3df375e4da463c2137eed0ad7af6235272",owner:"chengleqi",repo:"vssue-comment",title:"Kubernetes部署kube-prometheus"}},data:{"id-1":"[root@chengleqi]# cd ~","id-2":"[root@chengleqi]# cd ~"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"UEHJYEAUS7",algoliaIndex:"chengleqi-blog",algoliaSearchKey:"e4d8a33fb70564ca5dc114905aaeef08",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},twemoji:!0,typeit:{cursorChar:"|",cursorSpeed:null,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:80}}</script><script src=/js/theme.min.js></script></body></html>
