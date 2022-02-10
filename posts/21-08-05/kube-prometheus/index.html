@@ -3,23 +3,23 @@
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta name=robots content="noodp">
-<title>Kubernetes部署kube-prometheus - chengleqi's blog</title><meta name=description content><meta property="og:title" content="Kubernetes部署kube-prometheus">
-<meta property="og:description" content="使用kind创建集群 安装好kind后直接kind create cluster --config config.yaml --name cluster启动集群，config.yaml如下，是一个有一个master两个n">
+<title>k8s部署kube-prometheus - chengleqi's blog</title><meta name=description content><meta property="og:title" content="k8s部署kube-prometheus">
+<meta property="og:description" content="听说kube-prometheus开箱即用？">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://chengleqi.com/posts/21-08-05/kube-prometheus/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-08-05T16:41:30+08:00">
 <meta property="article:modified_time" content="2021-08-05T20:58:45+08:00">
 <meta name=twitter:card content="summary">
-<meta name=twitter:title content="Kubernetes部署kube-prometheus">
-<meta name=twitter:description content="使用kind创建集群 安装好kind后直接kind create cluster --config config.yaml --name cluster启动集群，config.yaml如下，是一个有一个master两个n">
+<meta name=twitter:title content="k8s部署kube-prometheus">
+<meta name=twitter:description content="听说kube-prometheus开箱即用？">
 <meta name=application-name content="chengleqi's blog">
 <meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/21-08-05/kube-prometheus/><link rel=prev href=https://chengleqi.com/posts/21-08-01/hugo/><link rel=next href=https://chengleqi.com/posts/21-10-05/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kubernetes部署kube-prometheus","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/21-08-05\/kube-prometheus\/"},"genre":"posts","keywords":"Prometheus","wordcount":1326,"url":"https:\/\/chengleqi.com\/posts\/21-08-05\/kube-prometheus\/","datePublished":"2021-08-05T16:41:30+08:00","dateModified":"2021-08-05T20:58:45+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/21-08-05/kube-prometheus/><link rel=prev href=https://chengleqi.com/posts/21-08-01/hugo/><link rel=next href=https://chengleqi.com/posts/21-10-05/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"k8s部署kube-prometheus","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/21-08-05\/kube-prometheus\/"},"genre":"posts","keywords":"Prometheus","wordcount":1346,"url":"https:\/\/chengleqi.com\/posts\/21-08-05\/kube-prometheus\/","datePublished":"2021-08-05T16:41:30+08:00","dateModified":"2021-08-05T20:58:45+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
-<a href=/ title="chengleqi's blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png data-srcset="https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png 1.5x, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png 2x" data-sizes=auto alt=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png title=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png><span id=id-1 class=typeit></span></a>
+<a href=/ title="chengleqi's blog"><span id=id-1 class=typeit></span></a>
 </div>
 <div class=menu>
 <div class=menu-inner><a class=menu-item href=/posts/> 文章 </a><a class=menu-item href=/categories/> 分类 </a><a class=menu-item href=/tags/> 标签 </a><a class=menu-item href=/about/> 关于 </a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io rel="noopener noreffer" target=_blank><i class="fab fa-github"></i> </a><a class=menu-item href=https://hub.docker.com/u/chengleqi rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i> </a><a class=menu-item href=https://chengleqi.notion.site/Kubernetes-in-Action-b2706120ab174888817b1aa454cc8785 rel="noopener noreffer" target=_blank><i class="fas fa-spin fa-dharmachakra"></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
@@ -43,7 +43,7 @@
 <div class=header-container>
 <div class=header-wrapper>
 <div class=header-title>
-<a href=/ title="chengleqi's blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png data-srcset="https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png 1.5x, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png 2x" data-sizes=auto alt=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png title=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100210115.png><span id=id-2 class=typeit></span></a>
+<a href=/ title="chengleqi's blog"><span id=id-2 class=typeit></span></a>
 </div>
 <div class=menu-toggle id=menu-toggle-mobile>
 <span></span><span></span><span></span>
@@ -80,9 +80,9 @@
 <div class=container><div class=toc id=toc-auto>
 <h2 class=toc-title>目录</h2>
 <div class=toc-content id=toc-content-auto></div>
-</div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png data-srcset="https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png 1.5x, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png 2x" data-sizes=auto alt=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png title=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">Kubernetes部署kube-prometheus</h2><div class=post-meta>
+</div><article class="page single" data-toc=disable><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png data-srcset="https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png 1.5x, https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png 2x" data-sizes=auto alt=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png title=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png></div><div class=single-card data-image=true><h2 class="single-title animated flipInX">k8s部署kube-prometheus</h2><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/kubernetes/><i class="far fa-folder fa-fw"></i>Kubernetes</a></span></div>
-<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-05>2021-08-05</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1326 字</span>&nbsp;
+<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-05>2021-08-05</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1346 字</span>&nbsp;
 <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟</span>&nbsp;</div>
 </div>
 <hr><div class="details toc" id=toc-static data-kept>
@@ -102,7 +102,8 @@
 </li>
 </ul>
 </nav></div>
-</div><div class=content id=content><h2 id=使用kind创建集群>使用kind创建集群</h2>
+</div><div class=content id=content><p>听说kube-prometheus开箱即用？</p>
+<h2 id=使用kind创建集群>使用kind创建集群</h2>
 <p>安装好kind后直接<code>kind create cluster --config config.yaml --name cluster</code>启动集群，config.yaml如下，是一个有一个master两个node的测试集群。测试完成后<code>kind delete cluster --name cluster</code>即可删除集群。</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># three node (two workers) cluster config</span><span class=w>
 </span><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Cluster</span><span class=w>
@@ -183,13 +184,9 @@ kubectl create -f manifests/
 </div>
 </div>
 <h3 id=grafana>grafana</h3>
-<p>同样端口转发</p>
+<p>同样设置端口转发</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>kubectl --namespace monitoring port-forward svc/grafana <span class=m>3000</span>
-</code></pre></div><figure><a class=lightgallery href=https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png title=grafana-login.png data-thumbnail=https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png data-sub-html="<h2>grafana login</h2>">
-<img class=lazyload src=/svg/loading.min.svg data-src=https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png data-srcset="https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png, https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png 1.5x, https://i.loli.net/2021/08/05/b4mFJu1Ci6WhVGo.png 2x" data-sizes=auto alt=grafana-login.png width=900px>
-</a><figcaption class=image-caption>grafana login</figcaption>
-</figure>
-<div class="details admonition tip open">
+</code></pre></div><div class="details admonition tip open">
 <div class="details-summary admonition-title">
 <i class="icon fas fa-lightbulb fa-fw"></i>tip<i class="details-icon fas fa-angle-right fa-fw"></i>
 </div>
@@ -210,16 +207,15 @@ kubectl create -f manifests/
 <div class=details-content>
 <div class=admonition-content>还有一个自称Kubernetes IDE的工具<a href=https://k8slens.dev/ target=_blank rel="noopener noreffer">Lens</a>，我尝试了一下，也很好用。</div>
 </div>
-</div>
-</div><div class=post-footer id=post-footer>
+</div></div><div class=post-footer id=post-footer>
 <div class=post-info><div class=post-info-tag><span><a href=/tags/prometheus/>Prometheus</a>
 </span></div><div class=post-info-line><div class=post-info-mod>
 <span>更新于 2021-08-05</span>
 </div><div class=post-info-mod></div>
 </div><div class=post-info-share>
-<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-via=star_wild_src data-hashtags=Prometheus><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-hashtag=Prometheus><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus data-image=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=Kubernetes部署kube-prometheus><i class="fab fa-evernote fa-fw"></i></a></span>
-</div></div><div class=post-nav><a href=/posts/21-08-01/hugo/ class=prev rel=prev title="Docker+GitHub Actions优化博客workflow"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a>
-<a href=/posts/21-10-05/ class=next rel=next title="IaaC: 从Terraform到Pulumi">Next Post<i class="fas fa-angle-right fa-fw"></i></a></div></div>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=k8s部署kube-prometheus data-via=star_wild_src data-hashtags=Prometheus><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-hashtag=Prometheus><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=k8s部署kube-prometheus data-image=https://gitee.com/chengleqi/blog-image/raw/master/img/202202100214854.png><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/21-08-05/kube-prometheus/ data-title=k8s部署kube-prometheus><i class="fab fa-evernote fa-fw"></i></a></span>
+</div></div><div class=post-nav><a href=/posts/21-08-01/hugo/ class=prev rel=prev title=博客搭建简记><i class="fas fa-angle-left fa-fw"></i>Previous Post</a>
+<a href=/posts/21-10-05/ class=next rel=next title="IaC: 从Terraform到Pulumi">Next Post<i class="fas fa-angle-right fa-fw"></i></a></div></div>
 </div><div id=comments class=single-card><div id=vssue></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://github.com/meteorlxy/vssue>Vssue</a>.
 </noscript></div></article></div>
@@ -233,4 +229,4 @@ Please enable JavaScript to view the comments powered by <a href=https://github.
 <i class="fas fa-chevron-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title=查看评论>
 <i class="fas fa-comment-alt fa-fw"></i>
-</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/vue/vssue/vssue.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/vue/vue.runtime.js></script><script src=/lib/vue/vssue/vssue.github.min.js></script><script src=/lib/autocomplete/autocomplete.min.js></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/twemoji/twemoji.min.js></script><script src=/lib/typeit/typeit.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{vssue:{clientID:"7e0e077deba6c51540c9",clientSecret:"02cc5e3df375e4da463c2137eed0ad7af6235272",owner:"chengleqi",repo:"vssue-comment",title:"Kubernetes部署kube-prometheus"}},data:{"id-1":"kubectl apply -f","id-2":"kubectl apply -f"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"UEHJYEAUS7",algoliaIndex:"chengleqi-blog",algoliaSearchKey:"e4d8a33fb70564ca5dc114905aaeef08",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},twemoji:!0,typeit:{cursorChar:"|",cursorSpeed:null,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:80}}</script><script src=/js/theme.min.js></script></body></html>
+</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/vue/vssue/vssue.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/vue/vue.runtime.js></script><script src=/lib/vue/vssue/vssue.github.min.js></script><script src=/lib/autocomplete/autocomplete.min.js></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/twemoji/twemoji.min.js></script><script src=/lib/typeit/typeit.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{vssue:{clientID:"7e0e077deba6c51540c9",clientSecret:"02cc5e3df375e4da463c2137eed0ad7af6235272",owner:"chengleqi",repo:"vssue-comment",title:"k8s部署kube-prometheus"}},data:{"id-1":"kubectl apply -f","id-2":"kubectl apply -f"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"UEHJYEAUS7",algoliaIndex:"chengleqi-blog",algoliaSearchKey:"e4d8a33fb70564ca5dc114905aaeef08",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},twemoji:!0,typeit:{cursorChar:"|",cursorSpeed:null,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:80}}</script><script src=/js/theme.min.js></script></body></html>

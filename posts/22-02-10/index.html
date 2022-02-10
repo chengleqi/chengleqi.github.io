@@ -3,19 +3,19 @@
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta name=robots content="noodp">
-<title>IaC: 从Terraform到Pulumi - chengleqi's blog</title><meta name=description content><meta property="og:title" content="IaC: 从Terraform到Pulumi">
-<meta property="og:description" content="可能是要鸽了？">
+<title>k8s service简记 - chengleqi's blog</title><meta name=description content><meta property="og:title" content="k8s service简记">
+<meta property="og:description" content="Service是虚拟的！">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://chengleqi.com/posts/21-10-05/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-10-05T10:31:09+08:00">
-<meta property="article:modified_time" content="2021-10-05T10:31:09+08:00">
+<meta property="og:url" content="https://chengleqi.com/posts/22-02-10/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2022-02-10T10:44:30+08:00">
+<meta property="article:modified_time" content="2022-02-10T10:44:30+08:00">
 <meta name=twitter:card content="summary">
-<meta name=twitter:title content="IaC: 从Terraform到Pulumi">
-<meta name=twitter:description content="可能是要鸽了？">
+<meta name=twitter:title content="k8s service简记">
+<meta name=twitter:description content="Service是虚拟的！">
 <meta name=application-name content="chengleqi's blog">
 <meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/21-10-05/><link rel=prev href=https://chengleqi.com/posts/21-08-05/kube-prometheus/><link rel=next href=https://chengleqi.com/posts/22-02-10/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"IaC: 从Terraform到Pulumi","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/21-10-05\/"},"genre":"posts","keywords":"Terraform, Pulumi","wordcount":67,"url":"https:\/\/chengleqi.com\/posts\/21-10-05\/","datePublished":"2021-10-05T10:31:09+08:00","dateModified":"2021-10-05T10:31:09+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/22-02-10/><link rel=prev href=https://chengleqi.com/posts/21-10-05/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"k8s service简记","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/22-02-10\/"},"genre":"posts","keywords":"Network","wordcount":12,"url":"https:\/\/chengleqi.com\/posts\/22-02-10\/","datePublished":"2022-02-10T10:44:30+08:00","dateModified":"2022-02-10T10:44:30+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
@@ -80,9 +80,9 @@
 <div class=container><div class=toc id=toc-auto>
 <h2 class=toc-title>目录</h2>
 <div class=toc-content id=toc-content-auto></div>
-</div><article class="page single" data-toc=disable><div class=single-card><h2 class="single-title animated flipInX">IaC: 从Terraform到Pulumi</h2><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/iaac/><i class="far fa-folder fa-fw"></i>IaaC</a></span></div>
-<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-10-05>2021-10-05</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 67 字</span>&nbsp;
+</div><article class="page single" data-toc=disable><div class=single-card><h2 class="single-title animated flipInX">k8s service简记</h2><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/kubernetes/><i class="far fa-folder fa-fw"></i>Kubernetes</a></span></div>
+<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-02-10>2022-02-10</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 12 字</span>&nbsp;
 <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 1 分钟</span>&nbsp;</div>
 </div>
 <hr><div class="details toc" id=toc-static data-kept>
@@ -91,19 +91,14 @@
 <span><i class="details-icon fas fa-angle-right"></i></span>
 </div>
 <div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents></nav></div>
-</div><div class=content id=content><p>可能是要鸽了？</p>
-<blockquote>
-<p><strong>IaC(<em>Infrastructure as code</em>)</strong>，旨在提升基础设施管理的便捷性，基础设施抽象成code之后更加灵活，便于进行版本控制，也方便了CI\CD。</p>
-</blockquote></div><div class=post-footer id=post-footer>
-<div class=post-info><div class=post-info-tag><span><a href=/tags/terraform/>Terraform</a>
-</span><span><a href=/tags/pulumi/>Pulumi</a>
+</div><div class=content id=content><p>Service是虚拟的！</p></div><div class=post-footer id=post-footer>
+<div class=post-info><div class=post-info-tag><span><a href=/tags/network/>Network</a>
 </span></div><div class=post-info-line><div class=post-info-mod>
-<span>更新于 2021-10-05</span>
+<span>更新于 2022-02-10</span>
 </div><div class=post-info-mod></div>
 </div><div class=post-info-share>
-<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/21-10-05/ data-title="IaC: 从Terraform到Pulumi" data-via=star_wild_src data-hashtags=Terraform,Pulumi><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/21-10-05/ data-hashtag=Terraform><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/21-10-05/ data-title="IaC: 从Terraform到Pulumi"><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/21-10-05/ data-title="IaC: 从Terraform到Pulumi"><i class="fab fa-evernote fa-fw"></i></a></span>
-</div></div><div class=post-nav><a href=/posts/21-08-05/kube-prometheus/ class=prev rel=prev title=k8s部署kube-prometheus><i class="fas fa-angle-left fa-fw"></i>Previous Post</a>
-<a href=/posts/22-02-10/ class=next rel=next title="k8s service简记">Next Post<i class="fas fa-angle-right fa-fw"></i></a></div></div>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/22-02-10/ data-title="k8s service简记" data-via=star_wild_src data-hashtags=Network><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/22-02-10/ data-hashtag=Network><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/22-02-10/ data-title="k8s service简记"><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/22-02-10/ data-title="k8s service简记"><i class="fab fa-evernote fa-fw"></i></a></span>
+</div></div><div class=post-nav><a href=/posts/21-10-05/ class=prev rel=prev title="IaC: 从Terraform到Pulumi"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
 </div><div id=comments class=single-card><div id=vssue></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://github.com/meteorlxy/vssue>Vssue</a>.
 </noscript></div></article></div>
@@ -117,4 +112,4 @@ Please enable JavaScript to view the comments powered by <a href=https://github.
 <i class="fas fa-chevron-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title=查看评论>
 <i class="fas fa-comment-alt fa-fw"></i>
-</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/vue/vssue/vssue.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/vue/vue.runtime.js></script><script src=/lib/vue/vssue/vssue.github.min.js></script><script src=/lib/autocomplete/autocomplete.min.js></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/twemoji/twemoji.min.js></script><script src=/lib/typeit/typeit.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{vssue:{clientID:"7e0e077deba6c51540c9",clientSecret:"02cc5e3df375e4da463c2137eed0ad7af6235272",owner:"chengleqi",repo:"vssue-comment",title:"IaC: 从Terraform到Pulumi"}},data:{"id-1":"kubectl apply -f","id-2":"kubectl apply -f"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"UEHJYEAUS7",algoliaIndex:"chengleqi-blog",algoliaSearchKey:"e4d8a33fb70564ca5dc114905aaeef08",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},twemoji:!0,typeit:{cursorChar:"|",cursorSpeed:null,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:80}}</script><script src=/js/theme.min.js></script></body></html>
+</a></div><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><link rel=stylesheet href=/lib/vue/vssue/vssue.min.css><link rel=stylesheet href=/lib/lightgallery/lightgallery.min.css><script src=/lib/vue/vue.runtime.js></script><script src=/lib/vue/vssue/vssue.github.min.js></script><script src=/lib/autocomplete/autocomplete.min.js></script><script src=/lib/algoliasearch/algoliasearch-lite.umd.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/twemoji/twemoji.min.js></script><script src=/lib/typeit/typeit.min.js></script><script src=/lib/lightgallery/lightgallery.min.js></script><script src=/lib/lightgallery/lg-thumbnail.min.js></script><script src=/lib/lightgallery/lg-zoom.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{vssue:{clientID:"7e0e077deba6c51540c9",clientSecret:"02cc5e3df375e4da463c2137eed0ad7af6235272",owner:"chengleqi",repo:"vssue-comment",title:"k8s service简记"}},data:{"id-1":"kubectl apply -f","id-2":"kubectl apply -f"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"UEHJYEAUS7",algoliaIndex:"chengleqi-blog",algoliaSearchKey:"e4d8a33fb70564ca5dc114905aaeef08",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:30,type:"algolia"},twemoji:!0,typeit:{cursorChar:"|",cursorSpeed:null,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:80}}</script><script src=/js/theme.min.js></script></body></html>
