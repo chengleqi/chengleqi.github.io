@@ -15,13 +15,12 @@
 <meta name=application-name content="chengleqi's blog">
 <meta name=apple-mobile-web-app-title content="chengleqi's blog"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/22-02-28/><link rel=prev href=https://chengleqi.com/posts/22-02-10/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"服务网格简记","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/22-02-28\/"},"genre":"posts","keywords":"Network","wordcount":401,"url":"https:\/\/chengleqi.com\/posts\/22-02-28\/","datePublished":"2022-02-28T21:05:07+08:00","dateModified":"2022-02-28T21:05:07+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':''==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:''==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://chengleqi.com/posts/22-02-28/><link rel=prev href=https://chengleqi.com/posts/22-02-10/><link rel=stylesheet href=/css/page.min.css><link rel=stylesheet href=/css/home.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"服务网格简记","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/chengleqi.com\/posts\/22-02-28\/"},"genre":"posts","keywords":"Network","wordcount":403,"url":"https:\/\/chengleqi.com\/posts\/22-02-28\/","datePublished":"2022-02-28T21:05:07+08:00","dateModified":"2022-02-28T21:05:07+08:00","publisher":{"@type":"Organization","name":"chengleqi"},"author":{"@type":"Person","name":"chengleqi"},"description":""}</script></head><body data-header-desktop data-header-mobile><script>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":''==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:''==="dark")&&document.body.setAttribute("theme","dark")</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/ title="chengleqi's blog">0x6B0873</a>
-</div>
-<div class=menu>
+</div><div class=menu>
 <div class=menu-inner><a class=menu-item href=/posts/> 文章 </a><a class=menu-item href=/categories/> 分类 </a><a class=menu-item href=/tags/> 标签 </a><a class=menu-item href=/about/> 关于 </a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io rel="noopener noreffer" target=_blank><i class="fab fa-github"></i> </a><a class=menu-item href=https://hub.docker.com/u/chengleqi rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i> </a><a class=menu-item href=https://chengleqi.notion.site/Kubernetes-in-Action-b2706120ab174888817b1aa454cc8785 rel="noopener noreffer" target=_blank><i class="fas fa-spin fa-dharmachakra"></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
 <input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
 <a href=# class="search-button search-toggle" id=search-toggle-desktop title=搜索>
@@ -36,20 +35,14 @@
 </span><a class=menu-item href=/index.xml title=RSS><i class="fas fa-rss fa-fw" title=RSS></i> </a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
 <i class="fas fa-adjust fa-fw"></i>
 </a>
-</div>
-</div>
-</div>
-</header><header class=mobile id=header-mobile>
+</div></div></div></header><header class=mobile id=header-mobile>
 <div class=header-container>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/ title="chengleqi's blog">0x6B0873</a>
-</div>
-<div class=menu-toggle id=menu-toggle-mobile>
+</div><div class=menu-toggle id=menu-toggle-mobile>
 <span></span><span></span><span></span>
-</div>
-</div>
-<div class=menu id=menu-mobile><div class=search-wrapper>
+</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
 <div class="search mobile" id=search-mobile>
 <input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
 <a href=# class="search-button search-toggle" id=search-toggle-mobile title=搜索>
@@ -61,68 +54,36 @@
 <span class="search-button search-loading" id=search-loading-mobile>
 <i class="fas fa-spinner fa-fw fa-spin"></i>
 </span>
-</div>
-<a href=# class=search-cancel id=search-cancel-mobile>
+</div><a href=# class=search-cancel id=search-cancel-mobile>
 取消
 </a>
 </div><a class=menu-item href=/posts/ title>文章</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/about/ title>关于</a><a class=menu-item href=https://github.com/chengleqi/chengleqi.github.io title rel="noopener noreffer" target=_blank><i class="fab fa-github"></i></a><a class=menu-item href=https://hub.docker.com/u/chengleqi title rel="noopener noreffer" target=_blank><i class="fab fa-docker"></i></a><a class=menu-item href=https://chengleqi.notion.site/Kubernetes-in-Action-b2706120ab174888817b1aa454cc8785 title rel="noopener noreffer" target=_blank><i class="fas fa-spin fa-dharmachakra"></i></a><div class=menu-item><a href=/index.xml title=RSS><i class="fas fa-rss fa-fw" title=RSS></i> </a>
 <span>&nbsp;|&nbsp;</span><a href=javascript:void(0); class=theme-switch title=切换主题>
 <i class="fas fa-adjust fa-fw"></i>
 </a>
-</div></div>
-</div>
-</header><div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div>
-</div>
-<div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div>
-</div><main class=main>
+</div></div></div></header><div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div></div><main class=main>
 <div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>目录</h2>
-<div class=toc-content id=toc-content-auto></div>
-</div><article class="page single" data-toc=disable><div class=single-card><h2 class="single-title animated flipInX">服务网格简记</h2><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/istio/><i class="far fa-folder fa-fw"></i>Istio</a></span></div>
-<div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-02-28>2022-02-28</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 401 字</span>&nbsp;
-<span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 1 分钟</span>&nbsp;</div>
-</div>
-<hr><div class="details toc" id=toc-static data-kept>
+<h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single" data-toc=disable><div class=single-card><h2 class="single-title animated flipInX">服务网格简记</h2><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>chengleqi</a></span>&nbsp;<span class=post-category>出版于 <a href=/categories/istio/><i class="far fa-folder fa-fw"></i>Istio</a></span></div><div class=post-meta-line><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-02-28>2022-02-28</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 403 字</span>&nbsp;
+<span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 1 分钟</span>&nbsp;</div></div><hr><div class="details toc" id=toc-static data-kept>
 <div class="details-summary toc-title">
 <span>目录</span>
 <span><i class="details-icon fas fa-angle-right"></i></span>
-</div>
-<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+</div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
 <ul>
-<li><a href=#服务网格是什么>服务网格是什么?</a></li>
-</ul>
-</nav></div>
-</div><div class=content id=content><p>真的需要上服务网格了吗？</p>
-<h2 id=服务网格是什么>服务网格是什么?</h2>
-<p>我们在谈论服务网格的时候基本上是在谈论Istio。</p>
-<p>服务网格是云原生网络基础设施，是通过sidecar的思想无侵入式的对微服务进行流量管理，其实现还是通过iptables劫持流量。</p>
-<p>Istio主要做了以下几件事:</p>
-<ol>
-<li>流量管理：控制服务间的流量和API调用流，使调用更可靠，增强不同环境下的网络鲁棒性。其实就是启动了一个容器(sidecar)对流量进行劫持。</li>
-<li>可观测性：了解服务之间的依赖关系和它们之间的性质和流量，提供快速识别定位问题的能力。可以理解为Spring Cloud中的链路调用的追踪和监控组件Sleuth和Zipkin的作用。</li>
-<li>策略实施：通过配置网格而不是以改变代码的方式来控制服务之间的访问策略，支持访问控制、速率限制和配额。可以理解为Spring Cloud Alibaba中的熔断和限流组件Sentinel的作用。</li>
-<li>服务识别与安全：提供在网格里的服务可识别性和安全性保护。</li>
-</ol></div><div class=post-footer id=post-footer>
+<li><a href=#服务网格是什么>服务网格是什么?</a></li></ul></nav></div></div><div class=content id=content><p>真的需要上服务网格了吗？</p><h2 id=服务网格是什么>服务网格是什么?</h2><p>我们在谈论服务网格的时候基本上是在谈论Istio。</p><p>服务网格是云原生网络基础设施，是运用sidecar的思想，无侵入式的对微服务进行流量管理，Istio的实现是通过iptables劫持流量。</p><p>Istio主要做了以下几件事:</p><ol>
+<li>流量管理：控制服务间的流量和API调用流，使调用更可靠，增强不同环境下的网络鲁棒性。其实是启动了一个容器(sidecar)对数据包进行劫持。</li><li>可观测性：了解服务之间的依赖关系和它们之间的性质和流量，提供快速识别定位问题的能力。可以理解为Spring Cloud中的链路追踪和监控组件Sleuth和Zipkin的作用。</li><li>策略实施：通过配置网格而不是以改变代码的方式来控制服务之间的访问策略，支持访问控制、速率限制和配额。可以理解为Spring Cloud Alibaba中的熔断和限流组件Sentinel的作用。</li><li>服务识别与安全：提供在网格里的服务可识别性和安全性保护。</li></ol></div><div class=post-footer id=post-footer>
 <div class=post-info><div class=post-info-tag><span><a href=/tags/network/>Network</a>
 </span></div><div class=post-info-line><div class=post-info-mod>
 <span>更新于 2022-02-28</span>
-</div><div class=post-info-mod></div>
-</div><div class=post-info-share>
+</div><div class=post-info-mod></div></div><div class=post-info-share>
 <span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://chengleqi.com/posts/22-02-28/ data-title=服务网格简记 data-via=star_wild_src data-hashtags=Network><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://chengleqi.com/posts/22-02-28/ data-hashtag=Network><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://chengleqi.com/posts/22-02-28/ data-title=服务网格简记><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://chengleqi.com/posts/22-02-28/ data-title=服务网格简记><i class="fab fa-evernote fa-fw"></i></a></span>
-</div></div><div class=post-nav><a href=/posts/22-02-10/ class=prev rel=prev title="k8s Service简记"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
-</div><div id=comments class=single-card><div id=vssue></div><noscript>
+</div></div><div class=post-nav><a href=/posts/22-02-10/ class=prev rel=prev title="k8s Service简记"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div></div><div id=comments class=single-card><div id=vssue></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://github.com/meteorlxy/vssue>Vssue</a>.
-</noscript></div></article></div>
-</main>
-<footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.2">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/khusika/FeelIt target=_blank rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
-</div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2021 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/>chengleqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
-</div>
-</footer>
-</div>
-<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部>
+</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/khusika/FeelIt target=_blank rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
+</div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2021 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/>chengleqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部>
 <i class="fas fa-chevron-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title=查看评论>
 <i class="fas fa-comment-alt fa-fw"></i>
